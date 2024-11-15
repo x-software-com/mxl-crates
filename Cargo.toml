@@ -1,0 +1,12 @@
+[package]
+name = "___REPOSITORY_NAME___"
+version = "0.1.0"
+license = "MIT OR APACHE-2.0"
+repository = "https://github.com/x-software-com/___REPOSITORY_NAME___/"
+homepage = "https://github.com/x-software-com/___REPOSITORY_NAME___/"
+description = "___PROJECT_DESCRIPTION___"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
