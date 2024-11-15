@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+members = [
+    "mxl-base",
+    "mxl-investigator",
+    "mxl-relm4-components",
+    "mxl-player-components",
+    "mxl-relm4-components",
+]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.70"
+license = "MIT OR APACHE-2.0"
+homepage = "https://github.com/x-software-com/mxl-crates"
+repository = "https://github.com/x-software-com/mxl-crates"
+description = "This is a component of the X-Software MXL product line."
+
+[workspace.dependencies]
+anyhow = "1"
+log = "0.4"
+const_format = "0.2"
+# Internationalization:
+i18n-embed-fl = { version = "0.9" }
+once_cell = { version = "1" }
+rust-embed = { version = "8", features = ["debug-embed"] }
+i18n-embed = { version = "0.15", features = [
+    "fluent-system",
+    "desktop-requester",
+] }

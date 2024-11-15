@@ -1,0 +1,29 @@
+[package]
+name = "mxl-relm4-components"
+version = "0.2.2"
+description = "This is a component of the X-Software MXL product line"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow.workspace = true
+log.workspace = true
+const_format.workspace = true
+relm4 = { version = "0.9", features = ["macros", "libadwaita", "gnome_44"] }
+relm4-components = "0.9"
+relm4-icons = { version = "0.9", default-features = false, optional = true }
+mithra = { git = "https://github.com/x-software-com/mithra.git", tag = "v0.1.0", optional = true }
+
+# Internationalization:
+i18n-embed-fl.workspace = true
+once_cell.workspace = true
+rust-embed.workspace = true
+i18n-embed.workspace = true
+
+[features]
+third_party_licenses_dialog = ["dep:mithra", "relm4-icons/all"]

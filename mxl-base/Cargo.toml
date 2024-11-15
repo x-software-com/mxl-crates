@@ -1,0 +1,25 @@
+[package]
+name = "mxl-base"
+version = "0.2.4"
+description = "This is a component of the X-Software MXL product line"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow.workspace = true
+log.workspace = true
+const_format.workspace = true
+fern = { version = "0.7" }
+directories = "5"
+chrono = { version = "0.4" }
+
+# Internationalization:
+i18n-embed-fl.workspace = true
+once_cell.workspace = true
+rust-embed.workspace = true
+i18n-embed.workspace = true

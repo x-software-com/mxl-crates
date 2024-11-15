@@ -1,0 +1,50 @@
+[package]
+name = "mxl-investigator"
+version = "0.1.18"
+description = "This is a component of the X-Software MXL product line."
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow.workspace = true
+log.workspace = true
+const_format.workspace = true
+fs4 = "0.11"
+directories = "5"
+chrono = { version = "0.4" }
+zip = "2"
+walkdir = "2"
+tempfile = { version = "3", optional = true }
+trash = "5"
+relm4-icons = { version = "0.9", default-features = false, optional = true }
+mxl-relm4-components = { git = "https://github.com/x-software-com/mxl-relm4-components.git", tag = "v0.2.2", optional = true }
+urlencoding = { version = "2", default-features = false, optional = true }
+backtrace = "0.3"
+humantime = "2"
+sysinfo = { version = "0.32", optional = true }
+
+# Internationalization:
+i18n-embed-fl.workspace = true
+once_cell.workspace = true
+rust-embed.workspace = true
+i18n-embed.workspace = true
+
+[features]
+default = ["sysinfo"]
+with_test = ["dep:tempfile"]
+create_report_dialog = [
+    "dep:mxl-relm4-components",
+    "relm4-icons/all",
+    "dep:urlencoding",
+]
+problem_report_dialog = [
+    "dep:mxl-relm4-components",
+    "relm4-icons/all",
+    "dep:urlencoding",
+]
+sysinfo = ["dep:sysinfo"]

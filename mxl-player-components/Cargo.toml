@@ -1,0 +1,65 @@
+[package]
+name = "mxl-player-components"
+version = "0.1.0"
+description = "This is a component of the X-Software MXL product line"
+keywords = [
+    "player",
+    "playback",
+    "multimedia",
+    "video",
+    "audio",
+    "gstreamer",
+    "relm4",
+]
+categories = ["multimedia", "multimedia::video", "multimedia::audio"]
+readme = "README.md"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+log.workspace = true
+const_format.workspace = true
+termtree = "0.5"
+chrono = "0.4"
+notify = "7"
+notify-debouncer-mini = "0.4"
+gst = { package = "gstreamer", version = "0.23", features = ["v1_24"] }
+gst-pbutils = { package = "gstreamer-pbutils", version = "0.23", features = [
+    "v1_24",
+] }
+gst-play = { package = "gstreamer-play", version = "0.23", features = [
+    "v1_24",
+] }
+gst-video = { package = "gstreamer-video", version = "0.23", features = [
+    "v1_24",
+] }
+gst-tag = { package = "gstreamer-tag", version = "0.23", features = ["v1_24"] }
+
+# Force crate to version 0.13.1, becuse 0.13.3 is broken, when executing: cargo check --no-default-features --features dmabuf
+gst-plugin-gtk4 = { version = "=0.13.1", features = ["gtk_v4_14"] }
+
+mxl-relm4-components = { git = "https://github.com/x-software-com/mxl-relm4-components.git", tag = "v0.2.2" }
+relm4-icons = { version = "0.9", features = ["all"] }
+
+# Internationalization:
+i18n-embed-fl.workspace = true
+once_cell.workspace = true
+rust-embed.workspace = true
+i18n-embed.workspace = true
+
+[features]
+x11egl = ["gst-plugin-gtk4/x11egl"]
+x11glx = ["gst-plugin-gtk4/x11glx"]
+wayland = ["gst-plugin-gtk4/wayland"]
+dmabuf = ["gst-plugin-gtk4/dmabuf"]
+
+[dev-dependencies]
+tempfile = "3"
+env_logger = "0.11"
+
+[package.metadata.cargo-machete]
+ignored = ["gst-plugin-gtk4"]
