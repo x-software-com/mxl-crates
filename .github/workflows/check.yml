@@ -9,55 +9,33 @@ concurrency:
   # Only run the latest workflow
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-env:
-  DOCKER_IMAGE: ubuntu
 name: check
 jobs:
   build_docker:
     runs-on: ubuntu-latest
     container:
       image: docker:dind
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+      # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
       packages: write
     outputs:
-      sha: sha-${{ steps.get_sha.outputs.sha_short }}
-      image: ${{ env.DOCKER_IMAGE }}
+      sha: ${{ steps.docker-build.outputs.sha-tag }}
+      image: check
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Get SHA
-        id: get_sha
-        shell: sh {0}
-        run: |
-          git config --global --add safe.directory $(pwd)
-          echo "sha_short=$(set -e;git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
         with:
-          images: |
-            ghcr.io/${{ github.repository }}/${{ env.DOCKER_IMAGE }}
-          tags: |
-            type=raw,value=latest
-            type=semver,pattern={{version}}
-            type=sha
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+          submodules: true
+      - name: Build docker image
+        id: docker-build
+        uses: ./.github/workflows/docker-build
         with:
-          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
-        with:
+          image-name: check
           context: docker
-          file: docker/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/${{ env.DOCKER_IMAGE }}:latest
-          cache-to: type=inline
+          dockerfile: docker/Dockerfile
   conventional_commit:
     name: conventional commit check
     runs-on: ubuntu-latest
