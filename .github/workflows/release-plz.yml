@@ -10,9 +10,40 @@ on:
       - main
 
 jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    container:
+      image: docker:dind
+      # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      sha: ${{ steps.docker-build.outputs.sha-tag }}
+      image: release-plz
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Build docker image
+        id: docker-build
+        uses: ./.github/workflows/docker-build
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: check
+          context: docker
+          dockerfile: docker/Dockerfile
+
   release-plz-release:
     name: Release-plz release
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,6 +63,11 @@ jobs:
   release-plz-pr:
     name: Release-plz PR
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     concurrency:
       group: release-plz-${{ github.ref }}
       cancel-in-progress: false
