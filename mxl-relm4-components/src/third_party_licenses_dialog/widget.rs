@@ -1,6 +1,6 @@
-use mithra_lib::third_party_licenses::ThirdPartyLibrary;
 use relm4::{adw::prelude::*, factory::FactoryVecDeque, prelude::*};
 use relm4_icons::icon_names;
+use sancus_lib::third_party_licenses::ThirdPartyLibrary;
 
 use super::{
     factory_packages::{ThirdPartyLicensePackageInit, ThirdPartyLicensePackageInput},

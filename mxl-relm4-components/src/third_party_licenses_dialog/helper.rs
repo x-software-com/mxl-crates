@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use log::*;
-pub use mithra_lib::third_party_licenses::{ThirdPartyLibrary, ThirdPartyLicenses};
+pub use sancus_lib::third_party_licenses::{ThirdPartyLibrary, ThirdPartyLicenses};
 use std::{
     env, fs,
     path::{Path, PathBuf},
