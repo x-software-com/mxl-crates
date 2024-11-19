@@ -1,5 +1,5 @@
-use mithra_lib::third_party_licenses::License;
 use relm4::{adw::prelude::*, factory::FactoryVecDeque, factory::FactoryView, gtk::pango, prelude::*, FactorySender};
+use sancus_lib::third_party_licenses::License;
 use std::string::String;
 
 use super::factory_licenses::ThirdPartyLicenseTextModel;

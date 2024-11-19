@@ -1,5 +1,5 @@
-use mithra_lib::third_party_licenses::License;
 use relm4::{gtk::prelude::*, prelude::*, FactorySender};
+use sancus_lib::third_party_licenses::License;
 
 #[derive(Debug)]
 pub struct ThirdPartyLicenseTextInit {
