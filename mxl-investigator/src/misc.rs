@@ -47,6 +47,10 @@ pub fn log_sysinfo(level: log::Level) {
             System::host_name().unwrap_or("unknown".into())
         );
     }
+    #[cfg(not(feature = "sysinfo"))]
+    {
+        _ = level
+    }
 }
 
 pub fn create_sysinfo_dump() {
