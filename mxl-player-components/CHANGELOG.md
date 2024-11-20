@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+
+## [0.1.1](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.0...mxl-player-components-v0.1.1) - 2024-11-20
+
+### Other
+
+- *(mxl-player-components)* exclude tests from publishing to crates.io
+- cleanup cargo dependencies
+
 ## [v0.1.0](https://github.com/x-software-com/mxl-player-components/compare/d26806803abd0210cf55ca70d5ee584783f6fef5..v0.1.0) - 2024-10-23
 #### Miscellaneous Chores
 - improve justfile and add setup guide to README.md - ([b80ba64](https://github.com/x-software-com/mxl-player-components/commit/b80ba64c46c0ba96de3feec9c82e0313d8bf5b54)) - marcbull
