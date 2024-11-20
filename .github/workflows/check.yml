@@ -11,34 +11,9 @@ concurrency:
   cancel-in-progress: true
 name: check
 jobs:
-  build_docker:
-    runs-on: ubuntu-latest
-    container:
-      image: docker:dind
-      # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      sha: ${{ steps.docker-build.outputs.sha-tag }}
-      image: check
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Build docker image
-        id: docker-build
-        uses: ./.github/workflows/docker-build
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          image-name: check
-          context: docker
-          dockerfile: docker/Dockerfile
   conventional_commit:
     name: conventional commit check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +25,7 @@ jobs:
         uses: webiny/action-conventional-commits@v1.3.0
   conventional_commit_pr:
     name: PR conventional commit check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
@@ -64,18 +39,10 @@ jobs:
         uses: webiny/action-conventional-commits@v1.3.0
   typos:
     name: typos
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
-      # packages write access is needed for private docker packages
-      packages: write
       checks: write
-    needs: [build_docker]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -84,12 +51,7 @@ jobs:
         uses: crate-ci/typos@v1.26.0
   clippy:
     name: ${{ matrix.toolchain }} / clippy
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
@@ -97,7 +59,6 @@ jobs:
       fail-fast: false
       matrix:
         toolchain: [stable, beta]
-    needs: [build_docker]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -113,16 +74,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   audit:
     name: cargo audit
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
-    needs: [build_docker]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -137,16 +92,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   hack:
     name: hack
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
-    needs: [build_docker]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -162,15 +111,9 @@ jobs:
           just hack
   test:
     name: test
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/${{ needs.build_docker.outputs.image }}:${{ needs.build_docker.outputs.sha }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
-    needs: [build_docker]
     steps:
       - uses: actions/checkout@v4
         with:

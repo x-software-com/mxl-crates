@@ -64,25 +64,3 @@ self-update:
 
 clean:
     cargo clean
-
-#
-# Docker image for local testing:
-#
-
-docker-tag := "mxl-crates-test"
-
-docker-build-no-cache:
-    docker build --no-cache -t {{docker-tag}} -f docker/Dockerfile docker
-
-docker-build:
-    docker build -t {{docker-tag}} -f docker/Dockerfile docker
-
-docker-run: docker-build
-    #!/usr/bin/env bash
-    set -e
-    # Get parent directory as the mountpoint for the volume.
-    MOUNT_DIR="$(dirname "$(pwd)")"
-    docker run --privileged=true -it --rm \
-        -v ${HOME}/.ssh:/root/.ssh \
-        -v ${MOUNT_DIR}:${MOUNT_DIR} \
-        --workdir $(pwd) {{docker-tag}} bash

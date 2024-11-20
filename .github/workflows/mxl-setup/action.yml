@@ -10,6 +10,23 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Setup system
+      shell: bash {0}
+      run: |
+        # Update package database
+        sudo apt-get update
+        # Basic packages
+        sudo apt-get install -y --no-install-recommends \
+          ca-certificates lsb-release build-essential clang git tar curl wget zip unzip \
+          linux-tools-common linux-tools-generic
+        # Requirements for mxl-investigator, mxl-player-components and mxl-relm4-components
+        sudo apt-get install -y --no-install-recommends \
+          xvfb libgtk-4-dev libadwaita-1-dev
+        # Requirements for mxl-player-components
+        sudo apt-get install -y --no-install-recommends \
+          libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev libgstreamer-plugins-bad1.0-dev \
+          gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
+          libgstreamer1.0-dev libunwind-dev
     - name: Install ${{ inputs.rust-toolchain }}
       id: install_rust_toolchain
       uses: dtolnay/rust-toolchain@master
@@ -24,5 +41,4 @@ runs:
     - name: Install cargo tools
       shell: bash {0}
       run: |
-        source /etc/profile
         cargo install just
