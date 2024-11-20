@@ -15,6 +15,7 @@ rust-version.workspace = true
 anyhow.workspace = true
 log.workspace = true
 const_format.workspace = true
+mxl-relm4-components = { workspace = true, optional = true }
 fs4 = "0.11"
 directories = "5"
 chrono = { version = "0.4" }
@@ -23,7 +24,6 @@ walkdir = "2"
 tempfile = { version = "3", optional = true }
 trash = "5"
 relm4-icons = { version = "0.9", default-features = false, optional = true }
-mxl-relm4-components = { git = "https://github.com/x-software-com/mxl-relm4-components.git", tag = "v0.2.2", optional = true }
 urlencoding = { version = "2", default-features = false, optional = true }
 backtrace = "0.3"
 humantime = "2"
