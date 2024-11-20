@@ -14,8 +14,9 @@ anyhow.workspace = true
 log.workspace = true
 const_format.workspace = true
 mxl-relm4-components.workspace = true
+chrono.workspace = true
+relm4-icons = { workspace = true, features = ["all"] }
 termtree = "0.5"
-chrono = "0.4"
 notify = "7"
 notify-debouncer-mini = "0.4"
 gst = { package = "gstreamer", version = "0.23", features = ["v1_24"] }
@@ -33,7 +34,6 @@ gst-tag = { package = "gstreamer-tag", version = "0.23", features = ["v1_24"] }
 # Force crate to version 0.13.1, becuse 0.13.3 is broken, when executing: cargo check --no-default-features --features dmabuf
 gst-plugin-gtk4 = { version = "=0.13.1", features = ["gtk_v4_14"] }
 
-relm4-icons = { version = "0.9", features = ["all"] }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
@@ -48,7 +48,7 @@ wayland = ["gst-plugin-gtk4/wayland"]
 dmabuf = ["gst-plugin-gtk4/dmabuf"]
 
 [dev-dependencies]
-tempfile = "3"
+tempfile.workspace = true
 env_logger = "0.11"
 
 [package.metadata.cargo-machete]

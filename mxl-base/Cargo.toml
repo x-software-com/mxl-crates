@@ -15,9 +15,9 @@ rust-version.workspace = true
 anyhow.workspace = true
 log.workspace = true
 const_format.workspace = true
-fern = { version = "0.7" }
+chrono.workspace = true
+fern = "0.7"
 directories = "5"
-chrono = { version = "0.4" }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
