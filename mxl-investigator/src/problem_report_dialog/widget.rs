@@ -257,7 +257,7 @@ impl Component for ProblemReportDialog {
                     if widgets
                         .stack_view
                         .visible_child()
-                        .map_or(false, |child| child == widgets.error_page)
+                        .is_some_and(|child| child == widgets.error_page)
                     {
                         sender.input(ProblemReportDialogInput::PrivateMessage(
                             PrivateMsg::ShowBackwardToStartPage,
