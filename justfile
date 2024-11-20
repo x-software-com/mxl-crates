@@ -16,7 +16,10 @@ setup-cargo-hack:
 setup-cargo-audit:
     cargo install --locked cargo-audit
 
-setup: setup-cargo-hack setup-cargo-audit
+setup-cargo-machete:
+    cargo install cargo-machete
+
+setup: setup-cargo-hack setup-cargo-audit setup-cargo-machete
     git config pull.rebase true
     git config branch.autoSetupRebase always
     cargo install --locked typos-cli
@@ -47,6 +50,9 @@ clippy rust-toolchain=rust-toolchain:
 
 audit: setup-cargo-audit
     cargo audit
+
+machete: setup-cargo-machete
+    cargo machete --with-metadata
 
 cargo-fmt:
     cargo fmt --all
