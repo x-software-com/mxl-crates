@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+
+## [0.2.5](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.4...mxl-base-v0.2.5) - 2024-11-20
+
+### Other
+
+- cleanup cargo dependencies
+
 ## [v0.2.4](https://github.com/x-software-com/mxl-base/compare/e6cc51322b5dce2f6fe3e0345f848e3758ef5983..v0.2.4) - 2024-09-02
 #### Bug Fixes
 - add workaround to print the current log file name - ([5770dc3](https://github.com/x-software-com/mxl-base/commit/5770dc36341c4fce26a8d906ec7af3066aa46533)) - acpiccolo

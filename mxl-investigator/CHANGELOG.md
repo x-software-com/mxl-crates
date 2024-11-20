@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+
+## [0.1.19](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.18...mxl-investigator-v0.1.19) - 2024-11-20
+
+### Other
+
+- *(mxl-investigator)* fix nightly clippy warning
+- *(mxl-investigator)* fix unused_variables warning when sysinfo feature is disabled
+- cleanup cargo dependencies
+
 ## [v0.1.18](https://github.com/x-software-com/mxl-investigator/compare/992895ce29d3778d3a01f0b6041e889780e2471a..v0.1.18) - 2024-09-02
 #### Miscellaneous Chores
 - update mxl-relm4-components dependency to v0.2.2 - ([992895c](https://github.com/x-software-com/mxl-investigator/commit/992895ce29d3778d3a01f0b6041e889780e2471a)) - acpiccolo

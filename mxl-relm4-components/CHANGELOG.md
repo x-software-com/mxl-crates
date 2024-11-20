@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+
+## [0.2.3](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.2...mxl-relm4-components-v0.2.3) - 2024-11-20
+
+### Other
+
+- cleanup cargo dependencies
+
 ## [v0.2.2](https://github.com/x-software-com/mxl-relm4-components/compare/944ecf76f8bed1b21430455174d9580ffa638fd3..v0.2.2) - 2024-09-02
 #### Miscellaneous Chores
 - update i18n-embed-fl and i18n-embed versions - ([944ecf7](https://github.com/x-software-com/mxl-relm4-components/commit/944ecf76f8bed1b21430455174d9580ffa638fd3)) - acpiccolo
