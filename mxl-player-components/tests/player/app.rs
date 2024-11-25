@@ -17,17 +17,24 @@ use mxl_player_components::{
 use mxl_relm4_components::relm4::{self, actions::*, adw::prelude::*, gtk::glib, prelude::*};
 use std::{
     path::PathBuf,
-    sync::{Arc, Mutex},
+    sync::{mpsc, Arc, Mutex},
+    thread,
 };
 
 use glib::clone;
 
 type ErrorChannel = Arc<Mutex<Option<anyhow::Error>>>;
 
+type Sender = mpsc::Sender<ControllerFeedback>;
+pub type Receiver = mpsc::Receiver<ControllerFeedback>;
+pub type ActionSender = ComponentSender<App>;
+
+type TestController = fn(Receiver, ActionSender);
+
 pub struct AppInit {
     pub uris: Vec<PathBuf>,
-    pub quit_on_stopped: bool,
     pub error_channel: ErrorChannel,
+    pub test_controller: TestController,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,6 +49,7 @@ pub enum AppState {
 }
 
 pub struct App {
+    controller_feedback: Sender,
     error_channel: ErrorChannel,
     request_exit: bool,
     ready_to_exit: Arc<Mutex<bool>>,
@@ -50,7 +58,6 @@ pub struct App {
     volume: f64,
     speed: f64,
     app_state: AppState,
-    auto_start_done: bool,
     reload_player_on_stopped: bool,
     playlist_component: Controller<PlaylistComponentModel>,
     player_component: Controller<PlayerComponentModel>,
@@ -60,7 +67,6 @@ pub struct App {
 #[allow(dead_code)]
 #[derive(Debug)]
 pub enum AppMsg {
-    PlayerInitialized,
     TogglePlayPause,
     DumpPipeline,
     Stop,
@@ -83,7 +89,7 @@ pub enum AppMsg {
     PlayerMediaInfoUpdated(PlayMediaInfo),
     Quit,
     PlaybackError(anyhow::Error),
-    DoAutoStart,
+    TestError(anyhow::Error),
 }
 
 #[derive(Debug)]
@@ -106,6 +112,25 @@ pub enum AppCmd {
     PlaylistEndOfPlaylist,
     PlaylistStateChanged(PlaylistState),
     PlaylistFileChooserRequest,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone)]
+pub enum ControllerFeedback {
+    AppStateChanged(AppState),
+    EndOfApp,
+    PlayerInitialized,
+    PlayerMediaInfoUpdated(PlayMediaInfo),
+    PlayerDurationChanged(f64),
+    PlayerPositionUpdated(f64),
+    PlayerSeekDone,
+    PlayerEndOfStream(String),
+    PlayerVolumeChanged(f64),
+    PlayerSpeedChanged(f64),
+    PlaylistChanged(PlaylistChange),
+    PlaylistSwitchUri(String),
+    PlaylistEndOfPlaylist,
+    PlaylistStateChanged(PlaylistState),
 }
 
 relm4::new_action_group!(WindowActionGroup, "win");
@@ -166,6 +191,17 @@ impl Component for App {
     fn init(app_init: Self::Init, root: Self::Root, sender: ComponentSender<Self>) -> ComponentParts<Self> {
         let app = relm4::main_adw_application();
 
+        let (controller_send, recv) = mpsc::channel();
+
+        // Start the test controller thread, which will controlled by the integration test.
+        // The main thread will send ControllerFeedback messages to the test controller thread through a channel.
+        // The test controller will send messages to the main thread through ComponentSender<App> to control the app.
+        thread::spawn({
+            let test_controller = app_init.test_controller;
+            let sender = sender.clone();
+            move || test_controller(recv, sender)
+        });
+
         let playlist_component = PlaylistComponentModel::builder()
             .launch(PlaylistComponentInit { uris: app_init.uris })
             .forward(sender.command_sender(), |msg| match msg {
@@ -204,15 +240,15 @@ impl Component for App {
         };
 
         let mut model = App {
+            controller_feedback: controller_send.clone(),
             error_channel: app_init.error_channel,
-            request_exit: app_init.quit_on_stopped,
+            request_exit: false,
             ready_to_exit: Arc::new(Mutex::new(false)),
             current_position: 0.0,
             duration: 0.0,
             volume: VOLUME_DEFAULT,
             speed: SPEED_DEFAULT,
             app_state: AppState::Stopped,
-            auto_start_done: false,
             reload_player_on_stopped: false,
             playlist_component,
             player_component,
@@ -407,6 +443,7 @@ impl Component for App {
                     sender.input(AppMsg::Quit);
                     gtk::glib::Propagation::Stop
                 } else {
+                    controller_send.send(ControllerFeedback::EndOfApp).unwrap_or_default();
                     gtk::glib::Propagation::Proceed
                 }
             }
@@ -423,7 +460,6 @@ impl Component for App {
         _root: &Self::Root,
     ) {
         match msg {
-            AppMsg::PlayerInitialized => sender.input(AppMsg::DoAutoStart),
             AppMsg::TogglePlayPause => {
                 debug!("Play/pause");
                 match self.app_state {
@@ -587,18 +623,20 @@ impl Component for App {
                 }
             }
             AppMsg::PlaybackError(error) => {
-                error!("{}", error);
+                error!("{:?}", error);
                 let mut data = self.error_channel.lock().unwrap();
                 data.replace(error);
                 sender.input(AppMsg::Quit);
             }
-            AppMsg::DoAutoStart => {
-                if !self.auto_start_done {
-                    self.auto_start_done = true;
-                    if !self.playlist_component.model().uris.is_empty() {
-                        sender.input(AppMsg::TogglePlayPause);
-                    }
+            AppMsg::TestError(error) => {
+                error!("{:?}", error);
+                let mut data = self.error_channel.lock().unwrap();
+                data.replace(error);
+                {
+                    let mut rte = self.ready_to_exit.lock().unwrap();
+                    *rte = true;
                 }
+                widgets.main_window.close();
             }
         }
         self.update_actions();
@@ -614,25 +652,39 @@ impl Component for App {
                     data.replace(error);
                     sender.input(AppMsg::Quit);
                 } else {
-                    sender.input(AppMsg::PlayerInitialized);
+                    self.controller_feedback
+                        .send(ControllerFeedback::PlayerInitialized)
+                        .unwrap();
                 }
             }
             AppCmd::PlayerMediaInfoUpdated(media_info) => {
-                sender.input(AppMsg::PlayerMediaInfoUpdated(media_info));
+                sender.input(AppMsg::PlayerMediaInfoUpdated(media_info.clone()));
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerMediaInfoUpdated(media_info))
+                    .unwrap_or_default();
             }
             AppCmd::PlayerEndOfStream(a) => {
-                debug!("player end of stream : {a}");
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerEndOfStream(a))
+                    .unwrap_or_default();
                 sender.input(AppMsg::Next)
             }
             AppCmd::PlayerDurationChanged(duration) => {
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerDurationChanged(duration))
+                    .unwrap_or_default();
                 self.duration = duration;
             }
             AppCmd::PlayerPositionUpdated(pos) => {
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerPositionUpdated(pos))
+                    .unwrap_or_default();
                 self.current_position = pos;
-                // debug!("player position updated {pos}");
             }
             AppCmd::PlayerSeekDone => {
-                debug!("player seek done");
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerSeekDone)
+                    .unwrap_or_default();
             }
             AppCmd::PlayerStateChanged(old_state, new_state) => {
                 debug!("playback state changed from {old_state:?} to {new_state:?}");
@@ -657,13 +709,24 @@ impl Component for App {
                     PlaybackState::Buffering => self.app_state = AppState::Buffering,
                     PlaybackState::Error => self.app_state = AppState::Error,
                 }
+                self.controller_feedback
+                    .send(ControllerFeedback::AppStateChanged(self.app_state))
+                    .unwrap_or_default();
             }
-            AppCmd::PlayerVolumeChanged(vol) => sender.input(AppMsg::SetVolume(vol)),
-            AppCmd::PlayerSpeedChanged(speed) => sender.input(AppMsg::SetSpeed(speed)),
-            AppCmd::PlayerAudioVideoOffsetChanged(offset) => trace!("AppCmd::PlayerAudioVideoOffsetChanged({offset})"),
-            AppCmd::PlayerSubtitleVideoOffsetChanged(offset) => {
-                trace!("AppCmd::PlayerSubtitleVideoOffsetChanged({offset})")
+            AppCmd::PlayerVolumeChanged(vol) => {
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerVolumeChanged(vol))
+                    .unwrap_or_default();
+                sender.input(AppMsg::SetVolume(vol));
             }
+            AppCmd::PlayerSpeedChanged(speed) => {
+                self.controller_feedback
+                    .send(ControllerFeedback::PlayerSpeedChanged(speed))
+                    .unwrap_or_default();
+                sender.input(AppMsg::SetSpeed(speed));
+            }
+            AppCmd::PlayerAudioVideoOffsetChanged(_offset) => (),
+            AppCmd::PlayerSubtitleVideoOffsetChanged(_offset) => (),
             AppCmd::PlayerWarning(error) => {
                 warn!("Internal player warning: {error:?}");
             }
@@ -679,24 +742,40 @@ impl Component for App {
                     PlaylistChange::Updated => trace!("PlaylistChange::Updated"),
                     PlaylistChange::Reordered => trace!("PlaylistChange::Reordered"),
                 }
+                self.controller_feedback
+                    .send(ControllerFeedback::PlaylistChanged(change))
+                    .unwrap_or_default();
             }
-            AppCmd::PlaylistSwitchUri(uri) => sender.input(AppMsg::SwitchUri(uri)),
+            AppCmd::PlaylistSwitchUri(uri) => {
+                self.controller_feedback
+                    .send(ControllerFeedback::PlaylistSwitchUri(uri.clone()))
+                    .unwrap_or_default();
+                sender.input(AppMsg::SwitchUri(uri));
+            }
             AppCmd::PlaylistEndOfPlaylist => {
                 info!("End of playlist reached");
-                sender.input(AppMsg::Stop);
+                self.controller_feedback
+                    .send(ControllerFeedback::PlaylistEndOfPlaylist)
+                    .unwrap_or_default();
+                // sender.input(AppMsg::Stop);
             }
-            AppCmd::PlaylistStateChanged(state) => match state {
-                PlaylistState::Playing => (),
-                PlaylistState::Stopping => {
-                    self.player_component
-                        .sender()
-                        .send(PlayerComponentInput::ChangeState(PlaybackState::Stopped))
-                        .unwrap_or_default();
+            AppCmd::PlaylistStateChanged(state) => {
+                match state {
+                    PlaylistState::Playing => (),
+                    PlaylistState::Stopping => {
+                        self.player_component
+                            .sender()
+                            .send(PlayerComponentInput::ChangeState(PlaybackState::Stopped))
+                            .unwrap_or_default();
+                    }
+                    PlaylistState::Stopped => {
+                        sender.input(AppMsg::Stopped);
+                    }
                 }
-                PlaylistState::Stopped => {
-                    sender.input(AppMsg::Stopped);
-                }
-            },
+                self.controller_feedback
+                    .send(ControllerFeedback::PlaylistStateChanged(state))
+                    .unwrap_or_default();
+            }
             AppCmd::PlaylistFileChooserRequest => (),
         }
         self.update_actions();
