@@ -71,7 +71,15 @@ fn playback() -> Result<()> {
                         }
                         ControllerFeedback::PlayerPositionUpdated(pos) => {
                             debug!("Position changed: {:?}", pos);
+                            match pos {
+                                0.0..2.0 => sender.input(AppMsg::Seek(7.0)),
+                                3.0..6.0 => sender.input(AppMsg::TestError(anyhow::anyhow!(
+                                    "Not expecting playback in region 3-6 seconds, seeking to 7 seconds"
+                                ))),
+                                _ => {}
+                            }
                         }
+                        ControllerFeedback::PlayerSeekDone => debug!("Seek done"),
                         ControllerFeedback::PlayerEndOfStream(uri) => {
                             debug!("End of stream of uri: {:?}", uri);
                         }
@@ -84,8 +92,8 @@ fn playback() -> Result<()> {
                         ControllerFeedback::PlaylistEndOfPlaylist => {
                             debug!("End of playlist - quit app");
                             sender.input(AppMsg::Quit);
+                            break;
                         }
-                        ControllerFeedback::EndOfApp => break,
                         msg => {
                             sender.input(AppMsg::TestError(anyhow::anyhow!(
                                 "Unexpected controller feedback from App: {:?}",
