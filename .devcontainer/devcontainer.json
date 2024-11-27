@@ -1,0 +1,52 @@
+{
+    "build": {
+        "dockerfile": "./Dockerfile",
+        "context": "."
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "vscode",
+            "userUid": "1000",
+            "userGid": "1000",
+            "upgradePackages": "true"
+        },
+        "ghcr.io/devcontainers/features/rust:1": "latest",
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": "false"
+        }
+    },
+    "mounts": [
+        {
+            "type": "bind",
+            "source": "${localEnv:HOME}/.ssh",
+            "target": "/home/vscode/.ssh"
+        }
+    ],
+    "dev.containers.copyGitConfig": true,
+    "postCreateCommand": "cargo install --locked cargo-binstall && cargo binstall --no-confirm just && just setup",
+    "remoteUser": "vscode",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "Continue.continue",
+                "DavidAnson.vscode-markdownlint",
+                "esbenp.prettier-vscode",
+                "fill-labs.dependi",
+                "github.vscode-github-actions",
+                "GitHub.vscode-pull-request-github",
+                "mkhl.shfmt",
+                "ms-azuretools.vscode-docker",
+                "MS-vsliveshare.vsliveshare",
+                "rust-lang.rust-analyzer",
+                "skellock.just",
+                "streetsidesoftware.code-spell-checker-german",
+                "tamasfe.even-better-toml",
+                "timonwong.shellcheck",
+                "usernamehw.errorlens",
+                "vadimcn.vscode-lldb"
+            ]
+        }
+    }
+}
