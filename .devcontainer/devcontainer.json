@@ -15,7 +15,17 @@
         "ghcr.io/devcontainers/features/git:1": {
             "version": "latest",
             "ppa": "false"
-        }
+        },
+        "ghcr.io/devcontainers/features/desktop-lite:1": {}
+    },
+    "forwardPorts": [6080, 5901],
+    "portsAttributes": {
+      "6080": {
+        "label": "novnc-desktop"
+      },
+      "5901": {
+        "label": "vnc-desktop"
+      }
     },
     "mounts": [
         {
@@ -41,7 +51,7 @@
                 "MS-vsliveshare.vsliveshare",
                 "rust-lang.rust-analyzer",
                 "skellock.just",
-                "streetsidesoftware.code-spell-checker-german",
+                "streetsidesoftware.code-spell-checker",
                 "tamasfe.even-better-toml",
                 "timonwong.shellcheck",
                 "usernamehw.errorlens",
