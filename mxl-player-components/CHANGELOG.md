@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.2](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.1...mxl-player-components-v0.1.2) - 2024-11-28
+
+### Other
+
+- *(mxl-player-components)* improve integration tests
+
 ## [0.1.1](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.0...mxl-player-components-v0.1.1) - 2024-11-20
 
 ### Other
