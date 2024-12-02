@@ -18,7 +18,7 @@ mxl-relm4-components = { workspace = true, optional = true }
 chrono.workspace = true
 tempfile = { workspace = true, optional = true }
 relm4-icons = { workspace = true, optional = true }
-fs4 = "0.11"
+fs4 = "0.12"
 zip = "2"
 walkdir = "2"
 trash = "5"
