@@ -1,8 +1,10 @@
 use crate::localization::helper::fl;
 use anyhow::{Context, Result};
 use log::*;
-use once_cell::sync::{Lazy, OnceCell};
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    sync::{LazyLock, OnceLock},
+};
 
 const KEEP_NUMBER_OF_FILES: usize = 20;
 const DEFAULT_LEVEL: log::LevelFilter = log::LevelFilter::Trace;
@@ -16,8 +18,8 @@ const CONSOLE_LEVEL: log::LevelFilter = log::LevelFilter::Trace;
 #[cfg(not(debug_assertions))] // Set debug level for console in release builds
 const CONSOLE_LEVEL: log::LevelFilter = log::LevelFilter::Warn;
 
-static LOG_RECEIVER_LOG_LEVEL: Lazy<std::sync::RwLock<log::LevelFilter>> =
-    Lazy::new(|| std::sync::RwLock::new(DEFAULT_LEVEL));
+static LOG_RECEIVER_LOG_LEVEL: LazyLock<std::sync::RwLock<log::LevelFilter>> =
+    LazyLock::new(|| std::sync::RwLock::new(DEFAULT_LEVEL));
 
 pub fn set_log_level(level: log::LevelFilter) {
     *LOG_RECEIVER_LOG_LEVEL.write().unwrap() = level;
@@ -27,7 +29,7 @@ pub fn get_log_level() -> log::LevelFilter {
     *LOG_RECEIVER_LOG_LEVEL.read().unwrap()
 }
 
-static CURRENT_LOG_FILE_HOLDER: OnceCell<PathBuf> = OnceCell::new();
+static CURRENT_LOG_FILE_HOLDER: OnceLock<PathBuf> = OnceLock::new();
 pub fn current_log_file() -> &'static PathBuf {
     CURRENT_LOG_FILE_HOLDER.get().expect("init() must be called first")
 }
@@ -69,7 +71,7 @@ impl Builder {
     }
 
     fn generic_log_dir(&self) -> &'static PathBuf {
-        static DIR: OnceCell<PathBuf> = OnceCell::new();
+        static DIR: OnceLock<PathBuf> = OnceLock::new();
         DIR.get_or_init(|| {
             super::misc::project_dirs()
                 .data_local_dir()
@@ -78,7 +80,7 @@ impl Builder {
     }
 
     fn generig_log_file(&self) -> &'static PathBuf {
-        static NAME: OnceCell<PathBuf> = OnceCell::new();
+        static NAME: OnceLock<PathBuf> = OnceLock::new();
         NAME.get_or_init(|| {
             self.generic_log_dir().join(format!(
                 "{}_{}",

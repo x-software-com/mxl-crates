@@ -1,4 +1,4 @@
-use once_cell::sync::OnceCell;
+use std::sync::OnceLock;
 
 pub fn init(
     qualifier: &'static str,
@@ -12,7 +12,7 @@ pub fn init(
 }
 
 pub fn project_dirs() -> &'static directories::ProjectDirs {
-    static PROJECT_DIR: OnceCell<directories::ProjectDirs> = OnceCell::new();
+    static PROJECT_DIR: OnceLock<directories::ProjectDirs> = OnceLock::new();
     PROJECT_DIR.get_or_init(|| {
         let about = super::about::about();
         if let Some(dir) = directories::ProjectDirs::from(about.qualifier, about.organization, about.app_name) {

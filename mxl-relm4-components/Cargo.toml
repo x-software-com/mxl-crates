@@ -21,7 +21,6 @@ sancus = { version = "0.1", optional = true }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
-once_cell.workspace = true
 rust-embed.workspace = true
 i18n-embed.workspace = true
 

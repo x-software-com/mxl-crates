@@ -1,11 +1,11 @@
 use anyhow::{Context, Result};
-use once_cell::sync::OnceCell;
+use std::sync::OnceLock;
 use std::{fs::File, io::Write, path::PathBuf};
 
 #[allow(dead_code)]
 pub(crate) const SUPPORT_EMAIL: &str = "support@x-software.com";
 
-static PROJECT_DATA_DIR: OnceCell<PathBuf> = OnceCell::new();
+static PROJECT_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 pub fn init(project_data_dir: PathBuf) {
     PROJECT_DATA_DIR.set(project_data_dir).expect("Already initialized");
@@ -25,10 +25,10 @@ pub(crate) fn get_data_dir() -> &'static PathBuf {
 
 #[cfg(feature = "with_test")]
 pub fn init_test() {
-    use once_cell::sync::Lazy;
+    use std::sync::LazyLock;
     use tempfile::TempDir;
 
-    static TMP_DIR: Lazy<TempDir> = Lazy::new(|| TempDir::new().expect("Failed create tmp directory"));
+    static TMP_DIR: LazyLock<TempDir> = LazyLock::new(|| TempDir::new().expect("Failed create tmp directory"));
 
     init(TMP_DIR.path().to_path_buf());
 }

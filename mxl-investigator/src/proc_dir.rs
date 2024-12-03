@@ -1,13 +1,12 @@
 use crate::localization::helper::fl;
 use anyhow::{Context, Result};
 use fs4::fs_std::FileExt;
-use once_cell::sync::{Lazy, OnceCell};
 use std::{
     fs::File,
     io::{Read, Write},
     panic,
     path::{Path, PathBuf},
-    sync::RwLock,
+    sync::{LazyLock, OnceLock, RwLock},
 };
 use walkdir::WalkDir;
 use zip::{write::SimpleFileOptions, ZipWriter};
@@ -23,9 +22,9 @@ const REPORT_FILE_NAME: &str = "exit_report.txt";
 const KEEP_NUMBER_OF_FAILED_RUNS: usize = 20;
 const PANIC_FILE_EXTENSION: &str = "panic";
 
-static RUN_DIR_HOLDER: OnceCell<PathBuf> = OnceCell::new();
+static RUN_DIR_HOLDER: OnceLock<PathBuf> = OnceLock::new();
 pub type ProcDirArchiveCallback = fn();
-static PROC_DIR_ARCHIVE_CREATE_CALLBACK: OnceCell<ProcDirArchiveCallback> = OnceCell::new();
+static PROC_DIR_ARCHIVE_CREATE_CALLBACK: OnceLock<ProcDirArchiveCallback> = OnceLock::new();
 
 fn create_dir_all_with_panic<P: AsRef<Path> + std::fmt::Debug>(path: P) {
     std::fs::create_dir_all(&path).unwrap_or_else(|error| panic!("Cannot create directory {:?}: {:?}", path, error));
@@ -37,12 +36,12 @@ pub fn set_proc_dir(path: PathBuf) {
 }
 
 pub fn default_proc_dir() -> &'static PathBuf {
-    static HOLDER: OnceCell<PathBuf> = OnceCell::new();
+    static HOLDER: OnceLock<PathBuf> = OnceLock::new();
     HOLDER.get_or_init(|| crate::misc::get_data_dir().join(std::path::Path::new(PROC_DIR_NAME)))
 }
 
 pub fn default_failed_dir() -> &'static PathBuf {
-    static HOLDER: OnceCell<PathBuf> = OnceCell::new();
+    static HOLDER: OnceLock<PathBuf> = OnceLock::new();
     HOLDER.get_or_init(|| {
         let failed_runs_path = crate::misc::get_data_dir().join(PROC_FAILED_DIR_NAME);
         create_dir_all_with_panic(&failed_runs_path);
@@ -50,7 +49,7 @@ pub fn default_failed_dir() -> &'static PathBuf {
     })
 }
 
-static FAILED_DIRS: Lazy<RwLock<Vec<PathBuf>>> = Lazy::new(|| RwLock::new(vec![default_failed_dir().clone()]));
+static FAILED_DIRS: LazyLock<RwLock<Vec<PathBuf>>> = LazyLock::new(|| RwLock::new(vec![default_failed_dir().clone()]));
 
 pub fn failed_dir_add(path: PathBuf) {
     FAILED_DIRS.write().unwrap().push(path)
@@ -163,7 +162,7 @@ impl Drop for LockFile {
 }
 
 fn create_lock_file(path: &Path) -> &'static Result<LockFile> {
-    static HOLDER: OnceCell<Result<LockFile>> = OnceCell::new();
+    static HOLDER: OnceLock<Result<LockFile>> = OnceLock::new();
     HOLDER.get_or_init(|| {
         let lock_file_path = path.join(LOCK_FILE_NAME);
 

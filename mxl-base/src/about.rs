@@ -1,4 +1,4 @@
-use once_cell::sync::OnceCell;
+use std::sync::OnceLock;
 
 #[derive(Debug)]
 pub struct About {
@@ -9,7 +9,7 @@ pub struct About {
     pub version: &'static str,
 }
 
-static ABOUT_REGISTER: OnceCell<About> = OnceCell::new();
+static ABOUT_REGISTER: OnceLock<About> = OnceLock::new();
 
 pub(crate) fn about_init(
     qualifier: &'static str,

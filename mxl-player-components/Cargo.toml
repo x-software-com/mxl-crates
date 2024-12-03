@@ -38,7 +38,6 @@ gst-plugin-gtk4 = { version = "=0.13.1", features = ["gtk_v4_14"] }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
-once_cell.workspace = true
 rust-embed.workspace = true
 i18n-embed.workspace = true
 
