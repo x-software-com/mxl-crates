@@ -32,10 +32,21 @@
             "type": "bind",
             "source": "${localEnv:HOME}/.ssh",
             "target": "/home/vscode/.ssh"
+        },
+        {
+            "source": "devcontainer-vcpkg-cache-${localWorkspaceFolderBasename}-${devcontainerId}",
+            "target": "/home/vscode/.cache/vcpkg",
+            "type": "volume"
+        },
+        {
+            "source": "devcontainer-cargo-cache-${localWorkspaceFolderBasename}-${devcontainerId}",
+            "target": "/usr/local/cargo",
+            "type": "volume"
         }
+
     ],
     "dev.containers.copyGitConfig": true,
-    "postCreateCommand": "cargo install --locked cargo-binstall && cargo binstall --no-confirm just && just setup",
+    "postCreateCommand": "cargo install just && just setup",
     "remoteUser": "vscode",
     "customizations": {
         "vscode": {
