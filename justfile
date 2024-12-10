@@ -10,23 +10,20 @@ rust-toolchain := "stable"
 # Setup the environment:
 #
 
-setup-cargo-binstall:
-    cargo install --locked cargo-binstall
+setup-cargo-hack:
+    cargo install cargo-hack
 
-setup-cargo-hack: setup-cargo-binstall
-    cargo binstall --no-confirm cargo-hack
+setup-cargo-audit:
+    cargo install cargo-audit
 
-setup-cargo-audit: setup-cargo-binstall
-    cargo binstall --no-confirm cargo-audit
+setup-cargo-machete:
+    cargo install cargo-machete
 
-setup-cargo-machete: setup-cargo-binstall
-    cargo binstall --no-confirm cargo-machete
-
-setup: setup-cargo-binstall setup-cargo-hack setup-cargo-audit setup-cargo-machete
+setup: setup-cargo-hack setup-cargo-audit setup-cargo-machete
     git config pull.rebase true
     git config branch.autoSetupRebase always
-    cargo binstall --no-confirm typos-cli
-    cargo binstall --no-confirm cocogitto
+    cargo install typos-cli
+    cargo install cocogitto
     cog install-hook --overwrite commit-msg
     @echo "Done"
 
@@ -68,8 +65,8 @@ cargo-fmt-check:
 # Misc recipes:
 #
 
-self-update: setup-cargo-binstall
-    cargo binstall --no-confirm just
+self-update:
+    cargo install just
 
 clean:
     cargo clean
