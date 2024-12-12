@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.6](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.5...mxl-base-v0.2.6) - 2024-12-12
+
+### Other
+
+- replaced once_cell dependency
+
 ## [0.2.5](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.4...mxl-base-v0.2.5) - 2024-11-20
 
 ### Other
