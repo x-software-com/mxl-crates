@@ -23,7 +23,6 @@ zip = "2"
 walkdir = "2"
 trash = "5"
 urlencoding = { version = "2", default-features = false, optional = true }
-backtrace = "0.3"
 humantime = "2"
 sysinfo = { version = "0.32", optional = true }
 

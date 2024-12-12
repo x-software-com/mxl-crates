@@ -430,7 +430,7 @@ pub fn setup_panic() {
     panic::set_hook(Box::new({
         let log_dir = proc_dir().to_owned();
         move |info| {
-            let backtrace = backtrace::Backtrace::new();
+            let backtrace = std::backtrace::Backtrace::force_capture();
             let thread = std::thread::current();
             let thread_name = thread.name().unwrap_or("<unnamed>");
             let cause = match info.payload().downcast_ref::<&'static str>() {
