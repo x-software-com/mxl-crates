@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.20](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.19...mxl-investigator-v0.1.20) - 2024-12-12
+
+### Other
+
+- *(deps)* update sysinfo requirement from 0.32 to 0.33
+- replaced dependency backtrace
+- *(deps)* update fs4 requirement from 0.11 to 0.12
+- replaced once_cell dependency
+
 ## [0.1.19](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.18...mxl-investigator-v0.1.19) - 2024-11-20
 
 ### Other

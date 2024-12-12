@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.4](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.3...mxl-relm4-components-v0.2.4) - 2024-12-12
+
+### Other
+
+- replaced once_cell dependency
+
 ## [0.2.3](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.2...mxl-relm4-components-v0.2.3) - 2024-11-20
 
 ### Other
