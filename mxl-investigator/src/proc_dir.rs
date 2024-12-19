@@ -444,15 +444,15 @@ pub fn setup_panic() {
             let dump = match info.location() {
                 Some(location) => {
                     format!(
-                        "Thread '{thread_name}' panicked at '{cause}': {file_name}:{line}:{column}\n{backtrace:?}",
+                        "Thread '{thread_name}' panicked at '{cause}': {file_name}:{line}:{column}\n{backtrace}",
                         file_name = location.file(),
                         line = location.line(),
                         column = location.column()
                     )
                 }
-                None => format!("Thread '{thread_name}' panicked at '{cause}'\n{backtrace:?}"),
+                None => format!("Thread '{thread_name}' panicked at '{cause}'\n{backtrace}"),
             };
-            std::eprint!("{dump}");
+            std::eprintln!("{dump}");
             let file_name = format!(
                 "{}.{}",
                 humantime::format_rfc3339(std::time::SystemTime::now()),
@@ -460,7 +460,7 @@ pub fn setup_panic() {
             );
             let panic_file = log_dir.join(file_name);
             if let Err(err) = std::fs::write(&panic_file, dump) {
-                std::eprint!(
+                std::eprintln!(
                     "Cannot write panic into file '{}': {:?}",
                     panic_file.to_string_lossy(),
                     err
