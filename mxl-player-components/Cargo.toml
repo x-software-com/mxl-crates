@@ -18,7 +18,7 @@ mxl-relm4-components.workspace = true
 chrono.workspace = true
 relm4-icons = { workspace = true, features = ["all"] }
 termtree = "0.5"
-notify = "7"
+notify = "8"
 notify-debouncer-mini = "0.4"
 gst = { package = "gstreamer", version = "0.23", features = ["v1_24"] }
 gst-pbutils = { package = "gstreamer-pbutils", version = "0.23", features = [
