@@ -17,7 +17,7 @@ log.workspace = true
 const_format.workspace = true
 chrono.workspace = true
 fern = "0.7"
-directories = "5"
+directories = "6"
 
 # Internationalization:
 i18n-embed-fl.workspace = true
