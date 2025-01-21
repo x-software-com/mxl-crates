@@ -10,6 +10,7 @@ pub(super) mod internal {
         SwitchForwardTo(gtk::Widget),
         OpenFileChooser,
         CreateReport(PathBuf),
+        OpenDirectory,
     }
 }
 

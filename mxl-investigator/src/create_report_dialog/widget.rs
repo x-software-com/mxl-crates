@@ -55,7 +55,7 @@ impl Component for CreateReportDialog {
             set_modal: true,
             set_hide_on_close: true,
             set_destroy_with_parent: true,
-            set_height_request: 300,
+            set_height_request: 340,
             set_width_request: 800,
 
             gtk::Box {
@@ -117,6 +117,21 @@ impl Component for CreateReportDialog {
                             add_css_class: "success",
                             #[watch]
                             set_description: Some(&fl!("create-report-dialog", "success-description", file_name = model.file_name.clone(), support_mail = create_report_email_link(model.app_name))),
+
+                            gtk::Box {
+                                set_hexpand: true,
+                                set_orientation: gtk::Orientation::Vertical,
+                                set_spacing: 8,
+
+                                adw::PreferencesGroup {
+                                    adw::ActionRow {
+                                        set_title: &fl!("create-report-dialog", "btn-open-directory"),
+                                        set_activatable: true,
+                                        // add_suffix = &gtk::Image::from_icon_name(icon_names::FOLDER_OPEN) {},
+                                        connect_activated => CreateReportDialogInput::PrivateMessage(PrivateMsg::OpenDirectory),
+                                    },
+                                },
+                            },
                         },
 
                         #[name(error_page)]
@@ -214,6 +229,13 @@ impl Component for CreateReportDialog {
                     widgets.stack_view.set_visible_child(&widgets.progress_page);
                     sender.spawn_oneshot_command(move || crate::proc_dir::proc_dir_archive(&path));
                     self.update_view(widgets, sender);
+                }
+                PrivateMsg::OpenDirectory => {
+                    let mut dir = std::path::PathBuf::from(&self.file_name);
+                    dir.set_file_name("");
+                    if let Err(error) = open::that(&dir) {
+                        log::warn!("Cannot open directory {}: {:?}", dir.to_string_lossy(), error);
+                    }
                 }
             },
             CreateReportDialogInput::Present(transient_for) => {

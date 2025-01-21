@@ -25,6 +25,7 @@ trash = "5"
 urlencoding = { version = "2", default-features = false, optional = true }
 humantime = "2"
 sysinfo = { version = "0.33", optional = true }
+open = { version = "5", optional = true }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
@@ -38,6 +39,7 @@ create_report_dialog = [
     "dep:mxl-relm4-components",
     "relm4-icons/all",
     "dep:urlencoding",
+    "dep:open",
 ]
 problem_report_dialog = [
     "dep:mxl-relm4-components",
