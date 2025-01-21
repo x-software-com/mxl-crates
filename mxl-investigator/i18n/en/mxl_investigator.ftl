@@ -25,5 +25,6 @@ create-report-dialog = Create report file
     .error-title = Report creation failed
     .btn-choose-file = Choose report file...
     .btn-choose-other-file = Choose other report file...
+    .btn-open-directory = Open directory
     .all-files = { -all-files }
     .zip-archive = { -zip-archive }
