@@ -50,7 +50,3 @@ dmabuf = ["gst-plugin-gtk4/dmabuf"]
 [dev-dependencies]
 tempfile.workspace = true
 env_logger = "0.11"
-heapless = "0.8"
-
-[package.metadata.cargo-machete]
-ignored = ["gst-plugin-gtk4"]
