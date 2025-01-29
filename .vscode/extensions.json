@@ -7,14 +7,19 @@
     "github.vscode-github-actions",
     "GitHub.vscode-pull-request-github",
     "mkhl.shfmt",
+    "nefrob.vscode-just-syntax",
     "ms-azuretools.vscode-docker",
     "MS-vsliveshare.vsliveshare",
     "rust-lang.rust-analyzer",
-    "skellock.just",
     "streetsidesoftware.code-spell-checker",
     "tamasfe.even-better-toml",
     "timonwong.shellcheck",
     "usernamehw.errorlens",
     "vadimcn.vscode-lldb",
+  ],
+  "unwantedRecommendations": [
+    "skellock.just",
+    "kokakiwi.vscode-just"
   ]
+
 }
