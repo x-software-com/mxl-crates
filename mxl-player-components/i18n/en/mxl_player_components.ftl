@@ -25,6 +25,7 @@ playlist-empty = Playlist is empty
     .desc = Add files to start a playback
 invalid-uri = Invalid URI {$uri}
 file-discovery-timeout = File info discovery timed out
+retry-fetch-metadata = Retry to fetch metadata
 
 # Video offsets dialog ui
 video-offsets = Video offsets
