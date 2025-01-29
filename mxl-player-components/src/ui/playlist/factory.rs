@@ -117,12 +117,10 @@ impl FactoryComponent for PlaylistEntryModel {
                         #[watch]
                         set_visible_child: if self.updating {
                                 spinner.upcast_ref::<gtk::Widget>()
+                            } else if !self.active && self.error.is_some() {
+                                retry_button.upcast_ref::<gtk::Widget>()
                             } else {
-                                if !self.active && self.error.is_some() {
-                                    retry_button.upcast_ref::<gtk::Widget>()
-                                } else {
-                                    icon.upcast_ref::<gtk::Widget>()
-                                }
+                                icon.upcast_ref::<gtk::Widget>()
                             },
 
                     #[name(spinner)]
