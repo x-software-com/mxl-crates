@@ -109,27 +109,49 @@ impl FactoryComponent for PlaylistEntryModel {
                     set_margin_all: MARGIN,
                     add_css_class: "activatable",
 
+                    #[name(state_stack)]
+                    gtk::Stack {
+                        set_hhomogeneous: true,
+                        set_vhomogeneous: true,
+
+                        #[watch]
+                        set_visible_child: if self.updating {
+                                spinner.upcast_ref::<gtk::Widget>()
+                            } else {
+                                if !self.active && self.error.is_some() {
+                                    retry_button.upcast_ref::<gtk::Widget>()
+                                } else {
+                                    icon.upcast_ref::<gtk::Widget>()
+                                }
+                            },
+
                     #[name(spinner)]
                     gtk::Spinner {
                         set_valign: gtk::Align::Center,
                         #[watch]
                         set_spinning: self.updating,
-                        #[watch]
-                        set_visible: self.updating,
                     },
 
                     #[name(icon)]
                     gtk::Image {
                         set_valign: gtk::Align::Center,
                         #[watch]
-                        set_visible: !self.updating,
-                        #[watch]
                         set_icon_name: if self.active {
                                 Some(icon_names::PLAY_LARGE)
-                            } else if self.error.is_some() {
-                                Some(icon_names::WARNING)
                             } else {
                                 None
+                                },
+                        },
+
+                        #[name(retry_button)]
+                        gtk::Button {
+                            set_margin_all: 0,
+                            set_valign: gtk::Align::Center,
+                            set_icon_name: icon_names::WARNING,
+                            set_tooltip_text: Some(fl!("retry-fetch-metadata").as_str()),
+                            set_use_underline: true,
+                            add_css_class: "flat",
+                            connect_clicked => PlaylistEntryInput::FetchMetadata,
                             },
                     },
 
