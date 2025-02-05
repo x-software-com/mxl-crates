@@ -54,6 +54,8 @@ pub enum PlaylistEntryInput {
     Activate,
     Deactivate,
     FetchMetadata,
+    UpdateMetadata(DiscovererInfo),
+    UpdateMetadataError(String),
     SetDropState(DropState),
     EnterEvent,
     LeaveEvent,
@@ -66,11 +68,7 @@ pub enum PlaylistEntryOutput {
     Move(DynamicIndex, usize),
     AddBefore(DynamicIndex, Vec<PathBuf>),
     AddAfter(DynamicIndex, Vec<PathBuf>),
-}
-
-#[derive(Debug)]
-pub enum PlaylistEntryCommandOutput {
-    UpdateMetadata(Result<DiscovererInfo>),
+    FetchMetadata(String, relm4::Sender<PlaylistEntryInput>),
 }
 
 const NOTIFY_TIMEOUT_SECS: u64 = 2;
@@ -83,7 +81,7 @@ impl FactoryComponent for PlaylistEntryModel {
     type Input = PlaylistEntryInput;
     type Output = PlaylistEntryOutput;
     type Init = PlaylistEntryInit;
-    type CommandOutput = PlaylistEntryCommandOutput;
+    type CommandOutput = ();
 
     view! {
         #[root]
@@ -466,11 +464,16 @@ impl FactoryComponent for PlaylistEntryModel {
             }
             PlaylistEntryInput::FetchMetadata => {
                 self.updating = true;
-                let uri = self.uri.clone();
-                sender.oneshot_command(async move {
-                    let result = get_media_info(&uri);
-                    PlaylistEntryCommandOutput::UpdateMetadata(result)
-                });
+                sender.output_sender().emit(PlaylistEntryOutput::FetchMetadata(
+                    self.uri.clone(),
+                    sender.input_sender().clone(),
+                ));
+            }
+            PlaylistEntryInput::UpdateMetadata(metadata) => {
+                self.update_metadata(&sender, Ok(metadata));
+            }
+            PlaylistEntryInput::UpdateMetadataError(error) => {
+                self.update_metadata(&sender, Err(anyhow::anyhow!("{}", error)));
             }
             PlaylistEntryInput::SetDropState(state) => match state {
                 DropState::None => {
@@ -495,84 +498,77 @@ impl FactoryComponent for PlaylistEntryModel {
         }
         self.update_view(widgets, sender)
     }
-
-    fn update_cmd(&mut self, message: Self::CommandOutput, sender: FactorySender<Self>) {
-        match message {
-            PlaylistEntryCommandOutput::UpdateMetadata(result) => {
-                self.updating = false;
-                self.duration = None;
-                "".clone_into(&mut self.duration_text);
-                self.error = None;
-                self.info_tooltip = None;
-                match result {
-                    Err(error) => self.error = Some(error),
-                    Ok(info) => {
-                        trace_media_info(&info);
-                        self.uri = info.uri().to_string();
-                        match info.result() {
-                            DiscovererResult::Ok => {
-                                if let Some(duration) = info.duration() {
-                                    self.duration = Some(duration.mseconds() as f64 / 1000_f64);
-                                    self.duration_text =
-                                        format!("<span font_desc=\"monospace\">{:.0}</span>", duration);
-                                }
-                                if let Some(info) = info.stream_info() {
-                                    if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
-                                        if let Some(tags) = info.tags() {
-                                            if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
-                                                match date_time.get().to_iso8601_string() {
-                                                    Ok(iso_string) => {
-                                                        match iso_string.parse::<DateTime<chrono::Local>>() {
-                                                            Ok(chrono_time) => {
-                                                                self.info_text = chrono_time.to_rfc2822();
-                                                                self.date_time = Some(chrono_time);
-                                                            }
-                                                            Err(_) => self.info_text = format!("{}", date_time.get()),
-                                                        }
-                                                    }
-                                                    Err(_) => self.info_text = format!("{}", date_time.get()),
-                                                }
-                                            } else {
-                                                "".clone_into(&mut self.info_text);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            DiscovererResult::MissingPlugins => {
-                                let details: Vec<_> = info
-                                    .missing_elements_installer_details()
-                                    .iter()
-                                    .map(|x| x.to_string())
-                                    .collect();
-                                self.error = Some(anyhow::anyhow!("{}", details.join(", ")));
-                            }
-                            DiscovererResult::UriInvalid => {
-                                self.error = Some(anyhow::anyhow!(fl!("invalid-uri", uri = self.uri.clone())));
-                            }
-                            DiscovererResult::Timeout => {
-                                self.error = Some(anyhow::anyhow!(fl!("file-discovery-timeout")));
-                            }
-                            DiscovererResult::Busy => unreachable!(),
-                            DiscovererResult::Error => unreachable!(),
-                            _ => (),
-                        }
-                        self.media_info = Some(info);
-                    }
-                }
-                if let Some(error) = &self.error {
-                    self.info_text = format!("{error:?}");
-                    self.info_tooltip = Some(self.info_text.clone())
-                }
-                sender
-                    .output(PlaylistEntryOutput::Updated(self.index.clone()))
-                    .unwrap_or_default();
-            }
-        }
-    }
 }
 
 impl PlaylistEntryModel {
+    fn update_metadata(&mut self, sender: &FactorySender<Self>, result: Result<DiscovererInfo>) {
+        self.updating = false;
+        self.duration = None;
+        "".clone_into(&mut self.duration_text);
+        self.error = None;
+        self.info_tooltip = None;
+        match result {
+            Err(error) => self.error = Some(error),
+            Ok(info) => {
+                trace_media_info(&info);
+                self.uri = info.uri().to_string();
+                match info.result() {
+                    DiscovererResult::Ok => {
+                        if let Some(duration) = info.duration() {
+                            self.duration = Some(duration.mseconds() as f64 / 1000_f64);
+                            self.duration_text = format!("<span font_desc=\"monospace\">{:.0}</span>", duration);
+                        }
+                        if let Some(info) = info.stream_info() {
+                            if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
+                                if let Some(tags) = info.tags() {
+                                    if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
+                                        match date_time.get().to_iso8601_string() {
+                                            Ok(iso_string) => match iso_string.parse::<DateTime<chrono::Local>>() {
+                                                Ok(chrono_time) => {
+                                                    self.info_text = chrono_time.to_rfc2822();
+                                                    self.date_time = Some(chrono_time);
+                                                }
+                                                Err(_) => self.info_text = format!("{}", date_time.get()),
+                                            },
+                                            Err(_) => self.info_text = format!("{}", date_time.get()),
+                                        }
+                                    } else {
+                                        "".clone_into(&mut self.info_text);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    DiscovererResult::MissingPlugins => {
+                        let details: Vec<_> = info
+                            .missing_elements_installer_details()
+                            .iter()
+                            .map(|x| x.to_string())
+                            .collect();
+                        self.error = Some(anyhow::anyhow!("{}", details.join(", ")));
+                    }
+                    DiscovererResult::UriInvalid => {
+                        self.error = Some(anyhow::anyhow!(fl!("invalid-uri", uri = self.uri.clone())));
+                    }
+                    DiscovererResult::Timeout => {
+                        self.error = Some(anyhow::anyhow!(fl!("file-discovery-timeout")));
+                    }
+                    DiscovererResult::Busy => unreachable!(),
+                    DiscovererResult::Error => unreachable!(),
+                    _ => (),
+                }
+                self.media_info = Some(info);
+            }
+        }
+        if let Some(error) = &self.error {
+            self.info_text = format!("{error:?}");
+            self.info_tooltip = Some(self.info_text.clone())
+        }
+        sender
+            .output(PlaylistEntryOutput::Updated(self.index.clone()))
+            .unwrap_or_default();
+    }
+
     fn init_file_watcher(uri_str: &str, sender: FactorySender<Self>) -> Result<Debouncer<RecommendedWatcher>> {
         let uri = relm4::gtk::glib::Uri::parse(uri_str, relm4::gtk::glib::UriFlags::PARSE_RELAXED)?;
         let file_path = uri.path().to_string();
@@ -592,14 +588,6 @@ impl PlaylistEntryModel {
 
         Ok(debouncer)
     }
-}
-
-fn get_media_info(uri: &str) -> Result<DiscovererInfo> {
-    let timeout: gst::ClockTime = gst::ClockTime::from_seconds(10);
-    let discoverer = gst_pbutils::Discoverer::new(timeout)?;
-    let info = discoverer.discover_uri(uri)?;
-
-    Ok(info)
 }
 
 fn trace_media_info(info: &DiscovererInfo) {

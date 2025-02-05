@@ -1,3 +1,5 @@
+use anyhow::Result;
+use gst_pbutils::DiscovererInfo;
 use log::*;
 use mxl_relm4_components::relm4::{self, actions::*, adw::prelude::*, factory::FactoryVecDeque, gtk::glib, prelude::*};
 use relm4_icons::icon_names;
@@ -110,6 +112,13 @@ impl Component for PlaylistComponentModel {
         }
     }
 
+    fn shutdown(&mut self, _widgets: &mut Self::Widgets, _output: relm4::Sender<Self::Output>) {
+        if let Some(pool) = self.thread_pool.take() {
+            debug!("Shutting down thread pool...");
+            pool.shutdown_join();
+        }
+    }
+
     // Initialize the component.
     fn init(init: Self::Init, root: Self::Root, sender: ComponentSender<Self>) -> ComponentParts<Self> {
         let mut group = RelmActionGroup::<SortActionGroup>::new();
@@ -140,6 +149,7 @@ impl Component for PlaylistComponentModel {
                     PlaylistEntryOutput::Move(from, to) => Self::Input::Move(from, to),
                     PlaylistEntryOutput::AddBefore(index, files) => Self::Input::AddBefore(index, files),
                     PlaylistEntryOutput::AddAfter(index, files) => Self::Input::AddAfter(index, files),
+                    PlaylistEntryOutput::FetchMetadata(uri, sender) => Self::Input::FetchMetadataForUri(uri, sender),
                 });
 
         let mut model = PlaylistComponentModel {
@@ -148,6 +158,7 @@ impl Component for PlaylistComponentModel {
             state: PlaylistState::Stopped,
             show_placeholder: init.uris.is_empty(),
             repeat: RepeatMode::Off,
+            thread_pool: Some(PlaylistComponentModel::init_thread_pool()),
         };
 
         model.add_uris(&sender, InsertMode::Back, &init.uris);
@@ -291,6 +302,19 @@ impl Component for PlaylistComponentModel {
                 };
                 debug!("Change repeat to {:?}", self.repeat);
             }
+            PlaylistComponentInput::FetchMetadataForUri(uri, sender) => {
+                if let Some(pool) = &self.thread_pool {
+                    pool.execute({
+                        move || {
+                            let result = get_media_info(&uri);
+                            match result {
+                                Ok(info) => sender.emit(PlaylistEntryInput::UpdateMetadata(info)),
+                                Err(err) => sender.emit(PlaylistEntryInput::UpdateMetadataError(err.to_string())),
+                            }
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -301,4 +325,12 @@ impl Component for PlaylistComponentModel {
             }
         }
     }
+}
+
+fn get_media_info(uri: &str) -> Result<DiscovererInfo> {
+    let timeout: gst::ClockTime = gst::ClockTime::from_seconds(10);
+    let discoverer = gst_pbutils::Discoverer::new(timeout)?;
+    let info = discoverer.discover_uri(uri)?;
+
+    Ok(info)
 }
