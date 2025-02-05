@@ -17,6 +17,8 @@ const_format.workspace = true
 mxl-relm4-components.workspace = true
 chrono.workspace = true
 relm4-icons = { workspace = true, features = ["all"] }
+# threadpool = "1"
+rusty_pool = "0.7"
 termtree = "0.5"
 notify = "8"
 notify-debouncer-mini = "0.4"

@@ -49,6 +49,10 @@ pub enum PlaylistComponentInput {
     FileChooserRequest,
     Sort(SortOrder),
     ToggleRepeat,
+    FetchMetadataForUri(
+        String,
+        mxl_relm4_components::relm4::Sender<super::factory::PlaylistEntryInput>,
+    ),
 }
 
 #[derive(Debug)]

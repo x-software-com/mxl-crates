@@ -24,6 +24,7 @@ pub struct PlaylistComponentModel {
     pub state: PlaylistState,
     pub show_placeholder: bool,
     pub repeat: RepeatMode,
+    pub thread_pool: Option<rusty_pool::ThreadPool>,
 }
 
 #[allow(dead_code)]
@@ -34,6 +35,17 @@ pub(super) enum InsertMode {
 }
 
 impl PlaylistComponentModel {
+    pub(super) fn init_thread_pool() -> rusty_pool::ThreadPool {
+        const DEFAULT_NUMBER_THREADS: usize = 3;
+        let thread_count = std::thread::available_parallelism()
+            .map_or(DEFAULT_NUMBER_THREADS, |v| v.get().min(DEFAULT_NUMBER_THREADS));
+        debug!("Create thread pool with {thread_count} number of threads");
+        rusty_pool::Builder::new()
+            .name("mxl_playlist_pool".to_owned())
+            .max_size(thread_count)
+            .build()
+    }
+
     pub fn dynamic_index(&self) -> Option<&DynamicIndex> {
         self.index.as_ref()
     }
