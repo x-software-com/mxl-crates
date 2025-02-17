@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.22](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.21...mxl-investigator-v0.1.22) - 2025-02-17
+
+### Added
+
+- add button to open the report file directory, closes #13
+
 ## [0.1.21](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.20...mxl-investigator-v0.1.21) - 2024-12-19
 
 ### Other
