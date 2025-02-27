@@ -15,6 +15,7 @@ pub enum Accelerators {
     ResetSpeed,
     FullScreen,
     DumpPipeline,
+    OpenProcDir,
     Preferences,
     VideoOffsets,
 }
@@ -58,7 +59,8 @@ pub fn accelerators(accel: Accelerators) -> Vec<&'static str> {
         Accelerators::DecreaseSpeed => vec![action_accelerator_with_os_modifier!("<Alt>minus")],
         Accelerators::ResetSpeed => vec![action_accelerator_with_os_modifier!("<Alt>0")],
         Accelerators::FullScreen => vec![action_accelerator_with_os_modifier!("F")],
-        Accelerators::DumpPipeline => vec![action_accelerator_with_os_modifier!("D")],
+        Accelerators::DumpPipeline => vec![action_accelerator_with_os_modifier!("<Alt>D")],
+        Accelerators::OpenProcDir => vec![action_accelerator_with_os_modifier!("D")],
         Accelerators::Preferences => vec![action_accelerator_with_os_modifier!("comma")],
         Accelerators::VideoOffsets => vec![action_accelerator_with_os_modifier!("T")],
     }
