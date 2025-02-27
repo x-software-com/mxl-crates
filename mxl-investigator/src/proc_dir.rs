@@ -121,12 +121,14 @@ fn move_to_failed_dir() -> Result<()> {
                 .with_context(|| format!("Cannot open lock file '{}'", lock_file_path.to_string_lossy()))
             {
                 Ok(lock_file) => match lock_file.try_lock_exclusive() {
-                    Ok(()) => {
-                        // Lock file present - this is an aborted run
-                        if let Err(err) = write_report_aborted_unexpected(&existing_run_dir) {
-                            log::warn!("{:?}", err);
+                    Ok(locked) => {
+                        if locked {
+                            // Lock file present - this is an aborted run
+                            if let Err(err) = write_report_aborted_unexpected(&existing_run_dir) {
+                                log::warn!("{:?}", err);
+                            }
+                            preserve_dir(&existing_run_dir)?;
                         }
-                        preserve_dir(&existing_run_dir)?;
                     }
                     Err(_error) => {
                         // Cannot get lock - directory is in use
