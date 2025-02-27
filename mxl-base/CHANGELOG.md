@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.7](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.6...mxl-base-v0.2.7) - 2025-02-27
+
+### Other
+
+- update rust edition to 2024
+- *(deps)* update directories requirement from 5 to 6
+
 ## [0.2.6](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.5...mxl-base-v0.2.6) - 2024-12-12
 
 ### Other
