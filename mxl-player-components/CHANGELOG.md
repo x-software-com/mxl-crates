@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.3](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.2...mxl-player-components-v0.1.3) - 2025-02-27
+
+### Added
+
+- added button to retry failed metadata fetch attempts
+
+### Fixed
+
+- fix playlist issue when closing application while fetching metadata
+
+### Other
+
+- update rust edition to 2024
+- add shortcut to open the proc directory
+- *(deps)* update notify requirement from 7 to 8
+- *(deps)* update gst-plugin-gtk4 requirement from =0.13.1 to =0.13.4
+- fix clippy issue
+- fix cargo-machete issues
+
 ## [0.1.2](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.1...mxl-player-components-v0.1.2) - 2024-12-12
 
 ### Other
