@@ -1,4 +1,4 @@
-use relm4::{gtk::prelude::*, prelude::*, FactorySender};
+use relm4::{FactorySender, gtk::prelude::*, prelude::*};
 use sancus_lib::third_party_licenses::License;
 
 #[derive(Debug)]

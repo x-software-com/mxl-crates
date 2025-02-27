@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use gst::{event::Step, format::Buffers, glib, prelude::*};
 use gst_play::PlayMessage;
 use log::*;
-use mxl_relm4_components::relm4::{self, gtk::gdk, Sender};
+use mxl_relm4_components::relm4::{self, Sender, gtk::gdk};
 use std::sync::{Arc, Mutex};
 
 use glib::clone;

@@ -9,7 +9,7 @@ use std::{
     sync::{LazyLock, OnceLock, RwLock},
 };
 use walkdir::WalkDir;
-use zip::{write::SimpleFileOptions, ZipWriter};
+use zip::{ZipWriter, write::SimpleFileOptions};
 
 pub const ARCHIVE_DEFAULT_FILE_EXTENSION: &str = "zip";
 pub const ARCHIVE_MIME_TYPE: &str = "application/x-zip";

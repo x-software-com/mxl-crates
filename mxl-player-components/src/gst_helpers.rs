@@ -51,7 +51,7 @@ pub fn init(cache_dir: &Path) {
 
     let registry = cache_dir.join("registry.bin");
     info!("Use registry file: {:?}", registry);
-    std::env::set_var("GST_REGISTRY", registry);
+    unsafe { std::env::set_var("GST_REGISTRY", registry) };
 
     // Set debug level before gstreamer initialization
     if gst::log::get_default_threshold() < gst::DebugLevel::Warning {

@@ -7,7 +7,7 @@ use glib::clone;
 
 use super::{
     messages::{
-        internal::PrivateMsg, PlaybackState, PlayerComponentCommand, PlayerComponentInput, PlayerComponentOutput,
+        PlaybackState, PlayerComponentCommand, PlayerComponentInput, PlayerComponentOutput, internal::PrivateMsg,
     },
     model::{PlayerComponentInit, PlayerComponentModel, ViewData},
 };

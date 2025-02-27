@@ -1,6 +1,6 @@
 use log::*;
 use mxl_relm4_components::relm4::{
-    adw::prelude::*, factory::FactoryVecDeque, gtk::gdk::DragAction, prelude::*, Sender,
+    Sender, adw::prelude::*, factory::FactoryVecDeque, gtk::gdk::DragAction, prelude::*,
 };
 use std::path::PathBuf;
 

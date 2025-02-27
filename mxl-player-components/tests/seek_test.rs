@@ -10,10 +10,10 @@ use std::{
 mod player;
 
 use player::{
+    ControllerFeedback,
     about::APP_ID,
     app::{App, AppInit, AppMsg},
     init::init,
-    ControllerFeedback,
 };
 
 #[test]
