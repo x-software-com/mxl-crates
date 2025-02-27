@@ -1,6 +1,6 @@
 use crate::localization::helper::fl;
 use crate::ui::video_offsets_dialog::messages::{
-    internal::PrivateMsg, VideoOffsetsComponentInput, VideoOffsetsComponentOutput,
+    VideoOffsetsComponentInput, VideoOffsetsComponentOutput, internal::PrivateMsg,
 };
 use crate::ui::video_offsets_dialog::model::{VideoOffsetsComponentInit, VideoOffsetsComponentModel};
 use mxl_relm4_components::relm4::{self, adw::prelude::*, prelude::*};

@@ -8,7 +8,7 @@ pub fn init(gst_debug_dump_dot_dir: &Path, cache_dir: &Path) -> Result<()> {
     crate::localization::init();
     mxl_relm4_components::init()?;
 
-    std::env::set_var(ENV_NAME_GST_DEBUG_DUMP_DOT_DIR, gst_debug_dump_dot_dir);
+    unsafe { std::env::set_var(ENV_NAME_GST_DEBUG_DUMP_DOT_DIR, gst_debug_dump_dot_dir) };
     gst_helpers::init(cache_dir);
     gst::init()?;
 

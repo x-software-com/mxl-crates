@@ -1,15 +1,14 @@
 use super::{
-    messages::{internal::PrivateMsg, CreateReportDialogInput, CreateReportDialogOutput},
+    messages::{CreateReportDialogInput, CreateReportDialogOutput, internal::PrivateMsg},
     model::{CreateReportDialog, CreateReportDialogInit},
 };
 use crate::localization::helper::fl;
 use mxl_relm4_components::{
     relm4::{
-        self,
+        self, Component, ComponentParts, ComponentSender,
         adw::{self, prelude::*},
         gtk::glib,
         prelude::*,
-        Component, ComponentParts, ComponentSender,
     },
     relm4_components::save_dialog::{SaveDialog, SaveDialogMsg, SaveDialogResponse, SaveDialogSettings},
 };

@@ -1,7 +1,7 @@
 use anyhow::{Context, Error, Result};
 use chrono::DateTime;
 use gst::TagList;
-use gst_pbutils::{prelude::*, DiscovererInfo, DiscovererResult};
+use gst_pbutils::{DiscovererInfo, DiscovererResult, prelude::*};
 use log::*;
 use mxl_relm4_components::relm4::{
     self,
@@ -9,7 +9,7 @@ use mxl_relm4_components::relm4::{
     gtk::{glib, pango, prelude::*},
     prelude::*,
 };
-use notify_debouncer_mini::{new_debouncer, notify::*, DebounceEventResult, Debouncer};
+use notify_debouncer_mini::{DebounceEventResult, Debouncer, new_debouncer, notify::*};
 use relm4_icons::icon_names;
 use std::path::{Path, PathBuf};
 

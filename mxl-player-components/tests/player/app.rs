@@ -17,7 +17,7 @@ use mxl_player_components::{
 use mxl_relm4_components::relm4::{self, actions::*, adw::prelude::*, gtk::glib, prelude::*};
 use std::{
     path::PathBuf,
-    sync::{mpsc, Arc, Mutex},
+    sync::{Arc, Mutex, mpsc},
     thread,
 };
 

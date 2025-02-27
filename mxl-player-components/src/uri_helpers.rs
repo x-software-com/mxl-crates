@@ -1,7 +1,7 @@
 use anyhow::Result;
 use log::*;
 use mxl_relm4_components::relm4::gtk::{
-    gio::{prelude::FileExt, File},
+    gio::{File, prelude::FileExt},
     glib,
 };
 use std::path::Path;

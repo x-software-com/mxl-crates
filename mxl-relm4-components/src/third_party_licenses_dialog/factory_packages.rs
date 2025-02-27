@@ -1,4 +1,4 @@
-use relm4::{adw::prelude::*, factory::FactoryVecDeque, factory::FactoryView, gtk::pango, prelude::*, FactorySender};
+use relm4::{FactorySender, adw::prelude::*, factory::FactoryVecDeque, factory::FactoryView, gtk::pango, prelude::*};
 use sancus_lib::third_party_licenses::License;
 use std::string::String;
 

@@ -1,5 +1,5 @@
 use super::{
-    messages::{internal::PrivateMsg, MessageDialogInput, MessageDialogOutput, MessageDialogType},
+    messages::{MessageDialogInput, MessageDialogOutput, MessageDialogType, internal::PrivateMsg},
     model::MessageDialog,
 };
 use crate::localization::helper::fl;
