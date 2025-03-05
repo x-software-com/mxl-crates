@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.23](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.22...mxl-investigator-v0.1.23) - 2025-03-05
+
+### Other
+
+- *(mxl-investigator)* upgrade fs4 to 0.13
+
 ## [0.1.22](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.21...mxl-investigator-v0.1.22) - 2025-02-27
 
 ### Added
