@@ -259,7 +259,7 @@ impl Component for CreateReportDialog {
         if let Err(err) = message {
             widgets
                 .error_page
-                .set_description(Some(glib::markup_escape_text(&format!("{:?}", err)).as_str()));
+                .set_description(Some(glib::markup_escape_text(&format!("{err:?}")).as_str()));
             sender.input(CreateReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
                 widgets.error_page.clone().into(),
             )));

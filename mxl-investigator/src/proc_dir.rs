@@ -27,7 +27,7 @@ pub type ProcDirArchiveCallback = fn();
 static PROC_DIR_ARCHIVE_CREATE_CALLBACK: OnceLock<ProcDirArchiveCallback> = OnceLock::new();
 
 fn create_dir_all_with_panic<P: AsRef<Path> + std::fmt::Debug>(path: P) {
-    std::fs::create_dir_all(&path).unwrap_or_else(|error| panic!("Cannot create directory {:?}: {:?}", path, error));
+    std::fs::create_dir_all(&path).unwrap_or_else(|error| panic!("Cannot create directory {path:?}: {error:?}"));
 }
 
 pub fn set_proc_dir(path: PathBuf) {
@@ -77,7 +77,7 @@ pub fn write_report_error(err: &anyhow::Error) {
         .with_context(|| "Cannot open report file")
     {
         Ok(mut file) => {
-            if let Err(err) = writeln!(file, "The program run exited with error:\n{:?}", err)
+            if let Err(err) = writeln!(file, "The program run exited with error:\n{err:?}")
                 .with_context(|| "Cannot write report file")
             {
                 log::warn!("{:?}", err)
@@ -95,7 +95,7 @@ fn move_to_failed_dir() -> Result<()> {
     let preserve_dir = |from: &Path| {
         let from_dir_name = from
             .file_name()
-            .unwrap_or_else(|| panic!("Cannot get name of path '{:?}'", from));
+            .unwrap_or_else(|| panic!("Cannot get name of path '{from:?}'"));
         let to = failed_dir.join(from_dir_name);
         std::fs::rename(from, &to).with_context(|| {
             format!(
@@ -184,10 +184,10 @@ pub fn proc_dir() -> &'static PathBuf {
 
         create_dir_all_with_panic(&data_dir);
         if let Err(err) = create_lock_file(&data_dir) {
-            panic!("Cannot lock directory: {:?}", err);
+            panic!("Cannot lock directory: {err:?}");
         }
-        move_to_failed_dir().unwrap_or_else(|error| panic!("Cannot move failed runs: {:?}", error));
-        cleanup_dir(default_failed_dir()).unwrap_or_else(|error| panic!("Cannot cleanup failed runs: {:?}", error));
+        move_to_failed_dir().unwrap_or_else(|error| panic!("Cannot move failed runs: {error:?}"));
+        cleanup_dir(default_failed_dir()).unwrap_or_else(|error| panic!("Cannot cleanup failed runs: {error:?}"));
         data_dir
     })
 }
@@ -354,7 +354,7 @@ fn cleanup_dir(dir: &Path) -> Result<()> {
 
 #[cfg(feature = "problem_report_dialog")]
 pub(crate) fn create_problem_report_file_name(binary_name: &str) -> String {
-    format!("{}_problem_report.{}", binary_name, ARCHIVE_DEFAULT_FILE_EXTENSION)
+    format!("{binary_name}_problem_report.{ARCHIVE_DEFAULT_FILE_EXTENSION}")
 }
 
 fn rm_dirs(dirs: &[PathBuf]) -> Result<()> {
@@ -402,7 +402,7 @@ pub fn failed_dir_move_to_trash() -> Result<()> {
 
 #[cfg(feature = "create_report_dialog")]
 pub(crate) fn create_report_file_name(binary_name: &str) -> String {
-    format!("{}_report.{}", binary_name, ARCHIVE_DEFAULT_FILE_EXTENSION)
+    format!("{binary_name}_report.{ARCHIVE_DEFAULT_FILE_EXTENSION}")
 }
 
 pub fn proc_dir_archive_set_callback(callback: ProcDirArchiveCallback) {

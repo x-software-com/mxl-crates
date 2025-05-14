@@ -29,7 +29,7 @@ pub fn init(cache_dir: &Path) {
             _ => ("unknown", log::Level::Trace),
         };
 
-        let target = format!("{}|{}", gst_level, module_path);
+        let target = format!("{gst_level}|{module_path}");
 
         log::logger().log(
             &log::RecordBuilder::new()

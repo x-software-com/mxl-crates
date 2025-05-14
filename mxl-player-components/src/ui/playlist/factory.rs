@@ -516,7 +516,7 @@ impl PlaylistEntryModel {
                     DiscovererResult::Ok => {
                         if let Some(duration) = info.duration() {
                             self.duration = Some(duration.mseconds() as f64 / 1000_f64);
-                            self.duration_text = format!("<span font_desc=\"monospace\">{:.0}</span>", duration);
+                            self.duration_text = format!("<span font_desc=\"monospace\">{duration:.0}</span>");
                         }
                         if let Some(info) = info.stream_info() {
                             if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
@@ -597,7 +597,7 @@ fn trace_media_info(info: &DiscovererInfo) {
             tree.push(termtree::Tree::new(format!("is live: {}", info.is_live())));
             tree.push(termtree::Tree::new(format!("is seekable: {}", info.is_seekable())));
             if let Some(duration) = info.duration() {
-                tree.push(termtree::Tree::new(format!("Duration: {:.0}", duration)));
+                tree.push(termtree::Tree::new(format!("Duration: {duration:.0}")));
             }
             if let Some(info) = info.toc() {
                 let mut sub_tree = termtree::Tree::new("TOC:".to_owned());
@@ -691,7 +691,7 @@ fn trace_media_info_tag(name: &str, value: &gst::glib::value::SendValue, tree: &
                 )));
             };
         } else {
-            tree.push(termtree::Tree::new(format!("{}: {}", name, value)));
+            tree.push(termtree::Tree::new(format!("{name}: {value}")));
         }
     }
 }

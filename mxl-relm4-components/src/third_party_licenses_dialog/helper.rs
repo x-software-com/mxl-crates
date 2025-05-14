@@ -157,7 +157,7 @@ impl Licenses {
                 license_info
                     .packages
                     .iter()
-                    .map(|x| format!("{}", x))
+                    .map(|x| format!("{x}"))
                     .collect::<Vec<String>>()
                     .join(", ")
             );

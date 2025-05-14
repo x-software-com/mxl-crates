@@ -27,7 +27,7 @@ fn playback() -> Result<()> {
             let data_path = PathBuf::from(name).join("data");
             for file in data_path
                 .read_dir()
-                .with_context(|| format!("Cannot read {:?} dir", data_path))?
+                .with_context(|| format!("Cannot read {data_path:?} dir"))?
             {
                 match file {
                     Ok(file) => uris.push(file.path()),

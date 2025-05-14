@@ -28,11 +28,11 @@ pub fn init_logging() {
         let target_buf;
         let module_path = get_module_path!(target_buf, "glib", domain);
         let (glib_level, level) = from_glib_level(&level);
-        let target = format!("{}|{}", glib_level, module_path);
+        let target = format!("{glib_level}|{module_path}");
 
         log::logger().log(
             &log::RecordBuilder::new()
-                .args(format_args!("{}", message))
+                .args(format_args!("{message}"))
                 .level(level)
                 .target(target.as_str())
                 .module_path(Some(module_path))
@@ -78,7 +78,7 @@ pub fn init_logging() {
 
         log::logger().log(
             &log::RecordBuilder::new()
-                .args(format_args!("{}", message))
+                .args(format_args!("{message}"))
                 .level(level)
                 .target(target.as_str())
                 .module_path(Some(module_path))

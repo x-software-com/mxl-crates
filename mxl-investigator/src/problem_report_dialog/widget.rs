@@ -226,7 +226,7 @@ impl Component for ProblemReportDialog {
                             .set_title(&fl!("problem-report-dialog", "error-create-title"));
                         widgets
                             .error_page
-                            .set_description(Some(glib::markup_escape_text(&format!("{:?}", err)).as_str()));
+                            .set_description(Some(glib::markup_escape_text(&format!("{err:?}")).as_str()));
                         sender.input(ProblemReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
                             widgets.error_page.clone().into(),
                         )));
@@ -244,7 +244,7 @@ impl Component for ProblemReportDialog {
                             .set_title(&fl!("problem-report-dialog", "error-move-title"));
                         widgets
                             .error_page
-                            .set_description(Some(glib::markup_escape_text(&format!("{:?}", err)).as_str()));
+                            .set_description(Some(glib::markup_escape_text(&format!("{err:?}")).as_str()));
                         sender.input(ProblemReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
                             widgets.error_page.clone().into(),
                         )));
