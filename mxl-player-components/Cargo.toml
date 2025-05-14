@@ -1,6 +1,6 @@
 [package]
 name = "mxl-player-components"
-version = "0.1.3"
+version = "0.1.4"
 description = "This is a component of the X-Software MXL product line"
 readme = "README.md"
 exclude = ["tests"]
