@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.4](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.3...mxl-player-components-v0.1.4) - 2025-05-14
+
+### Other
+
+- fix clippy issues
+
 ## [0.1.3](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.2...mxl-player-components-v0.1.3) - 2025-02-27
 
 ### Added

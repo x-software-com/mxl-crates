@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.24](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.23...mxl-investigator-v0.1.24) - 2025-05-14
+
+### Other
+
+- fix clippy issues
+
 ## [0.1.23](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.22...mxl-investigator-v0.1.23) - 2025-03-05
 
 ### Other

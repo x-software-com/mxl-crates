@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.6](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.5...mxl-relm4-components-v0.2.6) - 2025-05-14
+
+### Other
+
+- fix clippy issues
+
 ## [0.2.5](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.4...mxl-relm4-components-v0.2.5) - 2025-02-27
 
 ### Other
