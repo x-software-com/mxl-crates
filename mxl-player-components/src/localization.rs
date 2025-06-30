@@ -10,7 +10,7 @@ use std::sync::OnceLock;
 struct Localizations;
 
 // A language loader always needs to be initialized by an init function.
-// Do not use an automatic initialization implementation such as "std::sync::LacyLock",
+// Do not use an automatic initialization implementation such as "std::sync::LazyLock",
 // this can lead to a deadlock!
 pub static LANGUAGE_LOADER: OnceLock<FluentLanguageLoader> = OnceLock::new();
 
