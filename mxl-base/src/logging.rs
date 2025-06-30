@@ -79,7 +79,7 @@ impl Builder {
         })
     }
 
-    fn generig_log_file(&self) -> &'static PathBuf {
+    fn generic_log_file(&self) -> &'static PathBuf {
         static NAME: OnceLock<PathBuf> = OnceLock::new();
         NAME.get_or_init(|| {
             self.generic_log_dir().join(format!(
@@ -127,7 +127,7 @@ impl Builder {
                     error
                 )
             });
-            let log_file = self.generig_log_file();
+            let log_file = self.generic_log_file();
             logger =
                 logger.chain(fern::log_file(log_file).unwrap_or_else(|error| {
                     panic!("Cannot open log file '{}': {:?}", log_file.to_string_lossy(), error)
@@ -189,7 +189,7 @@ impl Builder {
                 let log_dir = self.generic_log_dir();
                 let symlink = log_dir.join(format!("{}.{}", about.binary_name, LOG_FILE_EXTENSION));
                 _ = std::fs::remove_file(&symlink);
-                let log_file = self.generig_log_file();
+                let log_file = self.generic_log_file();
                 _ = std::os::unix::fs::symlink(log_file, &symlink);
             }
         }
