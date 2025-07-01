@@ -418,7 +418,7 @@ impl PlayerComponentModel {
 
         let old_zoom = view_data.video_view.zoom_factor;
         let new_scale = new_scale.unwrap_or(1.0).clamp(1.0, 10.0);
-        trace!("New zoom: {}", new_scale);
+        trace!("New zoom: {new_scale}");
 
         view_data
             .video_view

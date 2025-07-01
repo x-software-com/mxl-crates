@@ -246,7 +246,7 @@ impl FactoryComponent for PlaylistEntryModel {
         {
             Ok(debouncer) => Some(debouncer),
             Err(error) => {
-                error!("{:?}", error);
+                error!("{error:?}");
                 None
             }
         };
@@ -579,7 +579,7 @@ impl PlaylistEntryModel {
                     debug!("File {:?} changed, updating metadata", e.path);
                     sender.input(PlaylistEntryInput::FetchMetadata);
                 }),
-                Err(error) => error!("Error {:?}", error),
+                Err(error) => error!("Error {error:?}"),
             },
         )?;
         debouncer

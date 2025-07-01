@@ -153,7 +153,7 @@ impl Builder {
                             return Some(path);
                         }
                     }
-                    Err(error) => warn!("Cannot read log file: {}", error.to_string()),
+                    Err(error) => warn!("Cannot read log file: {error}"),
                 }
                 None
             })

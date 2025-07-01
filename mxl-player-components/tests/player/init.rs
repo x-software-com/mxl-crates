@@ -25,7 +25,7 @@ pub fn init() -> Result<()> {
 
     relm4::RELM_THREADS.set(4).map_or_else(
         |size| {
-            error!("Cannot set REALM_THREADS to '{}'", size);
+            error!("Cannot set REALM_THREADS to '{size}'");
         },
         |_| (),
     );

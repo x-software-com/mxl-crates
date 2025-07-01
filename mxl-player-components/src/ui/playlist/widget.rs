@@ -273,7 +273,7 @@ impl Component for PlaylistComponentModel {
                 if let Some(to) = edit.get(to) {
                     let from = from.current_index();
                     let to = to.index.current_index();
-                    trace!("Move playlist entry from index {} to {}", from, to);
+                    trace!("Move playlist entry from index {from} to {to}");
                     edit.move_to(from, to);
                     sender
                         .output_sender()
