@@ -127,7 +127,7 @@ pub fn create_sysinfo_dump() {
         }
 
         if let Err(err) = create_sysinfo() {
-            log::warn!("Cannot create system information: {:?}", err);
+            log::warn!("Cannot create system information: {err:?}");
         }
     }
 }
@@ -162,6 +162,6 @@ pub fn exec_cmd_and_dump_pipes(command: std::process::Command) {
     }
 
     if let Err(err) = exec_cmd(command) {
-        log::warn!("Cannot execute command: {:?}", err);
+        log::warn!("Cannot execute command: {err:?}");
     }
 }

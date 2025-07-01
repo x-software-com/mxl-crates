@@ -57,29 +57,29 @@ fn playback() -> Result<()> {
                     }
                     Ok(feedback) => match feedback {
                         ControllerFeedback::AppStateChanged(state) => {
-                            debug!("App state changed: {:?}", state);
+                            debug!("App state changed: {state:?}");
                         }
                         ControllerFeedback::PlayerMediaInfoUpdated(info) => {
-                            debug!("Media info updated: {:?}", info);
+                            debug!("Media info updated: {info:?}");
                         }
                         ControllerFeedback::PlayerInitialized => {
                             debug!("Player initialized");
                             sender.input(AppMsg::TogglePlayPause);
                         }
                         ControllerFeedback::PlayerDurationChanged(duration) => {
-                            debug!("Duration changed: {:?}", duration);
+                            debug!("Duration changed: {duration:?}");
                         }
                         ControllerFeedback::PlayerPositionUpdated(pos) => {
-                            debug!("Position changed: {:?}", pos);
+                            debug!("Position changed: {pos:?}");
                         }
                         ControllerFeedback::PlayerEndOfStream(uri) => {
-                            debug!("End of stream of uri: {:?}", uri);
+                            debug!("End of stream of uri: {uri:?}");
                         }
                         ControllerFeedback::PlaylistChanged(change) => {
-                            debug!("Playlist changed: {:?}", change);
+                            debug!("Playlist changed: {change:?}");
                         }
                         ControllerFeedback::PlaylistSwitchUri(uri) => {
-                            debug!("Playlist switched to uri: {:?}", uri);
+                            debug!("Playlist switched to uri: {uri:?}");
                         }
                         ControllerFeedback::PlaylistEndOfPlaylist => {
                             debug!("End of playlist - quit app");

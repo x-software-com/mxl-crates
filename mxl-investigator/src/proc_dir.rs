@@ -80,10 +80,10 @@ pub fn write_report_error(err: &anyhow::Error) {
             if let Err(err) = writeln!(file, "The program run exited with error:\n{err:?}")
                 .with_context(|| "Cannot write report file")
             {
-                log::warn!("{:?}", err)
+                log::warn!("{err:?}")
             }
         }
-        Err(err) => log::warn!("{:?}", err),
+        Err(err) => log::warn!("{err:?}"),
     }
 }
 
@@ -125,7 +125,7 @@ fn move_to_failed_dir() -> Result<()> {
                         if locked {
                             // Lock file present - this is an aborted run
                             if let Err(err) = write_report_aborted_unexpected(&existing_run_dir) {
-                                log::warn!("{:?}", err);
+                                log::warn!("{err:?}");
                             }
                             preserve_dir(&existing_run_dir)?;
                         }

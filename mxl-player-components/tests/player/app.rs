@@ -623,13 +623,13 @@ impl Component for App {
                 }
             }
             AppMsg::PlaybackError(error) => {
-                error!("{:?}", error);
+                error!("{error:?}");
                 let mut data = self.error_channel.lock().unwrap();
                 data.replace(error);
                 sender.input(AppMsg::Quit);
             }
             AppMsg::TestError(error) => {
-                error!("{:?}", error);
+                error!("{error:?}");
                 let mut data = self.error_channel.lock().unwrap();
                 data.replace(error);
                 {
