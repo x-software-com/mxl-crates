@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.24](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.23...mxl-investigator-v0.1.24) - 2025-07-04
+
+### Other
+
+- *(deps)* update zip requirement from 2 to 4
+- *(deps)* update sysinfo requirement from 0.33 to 0.35
+- fix clippy warnings, use variables directly in the format string
+- update README links to point to mxl-crates
+- correct typo in comment
+- fix clippy issues
+
 ## [0.1.23](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.22...mxl-investigator-v0.1.23) - 2025-03-05
 
 ### Other

@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.8](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.7...mxl-base-v0.2.8) - 2025-07-04
+
+### Other
+
+- fix clippy warnings, use variables directly in the format string
+- correct typo in function name
+- update README links to point to mxl-crates
+- correct typo in comment
+
 ## [0.2.7](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.6...mxl-base-v0.2.7) - 2025-02-27
 
 ### Other
