@@ -21,3 +21,6 @@ __pycache__
 *.log
 
 .mxl-env
+
+# Ignore the project specific cargo directory for NixOS
+.cargo
