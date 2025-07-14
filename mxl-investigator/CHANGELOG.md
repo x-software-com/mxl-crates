@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.0](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.24...mxl-investigator-v0.2.0) - 2025-07-14
+
+### Other
+
+- [**breaking**] change behavior when a directory is deleted or retained
+- *(deps)* update sysinfo requirement from 0.35 to 0.36
+
 ## [0.1.24](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.1.23...mxl-investigator-v0.1.24) - 2025-07-04
 
 ### Other
