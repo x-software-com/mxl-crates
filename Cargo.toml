@@ -24,7 +24,7 @@ chrono = "0.4"
 tempfile = "3"
 relm4-icons = "0.9"
 # Internationalization:
-i18n-embed-fl = { version = "0.9" }
+i18n-embed-fl = { version = "0.10" }
 rust-embed = { version = "8", features = ["debug-embed"] }
 i18n-embed = { version = "0.15", features = [
     "fluent-system",
