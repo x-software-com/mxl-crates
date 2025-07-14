@@ -226,7 +226,7 @@ impl Component for CreateReportDialog {
                     self.file_name = path.to_string_lossy().to_string();
                     widgets.stack_view.set_transition_type(gtk::StackTransitionType::None);
                     widgets.stack_view.set_visible_child(&widgets.progress_page);
-                    sender.spawn_oneshot_command(move || crate::proc_dir::proc_dir_archive(&path));
+                    sender.spawn_oneshot_command(move || crate::proc_dir::archive_and_remove_panics(&path));
                     self.update_view(widgets, sender);
                 }
                 PrivateMsg::OpenDirectory => {
