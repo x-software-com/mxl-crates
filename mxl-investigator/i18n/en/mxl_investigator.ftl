@@ -1,9 +1,6 @@
 -all-files = All files
 -zip-archive = ZIP archive
 
-no-bug-reports = No bug reports are available, nothing exported
-bug-report-written-to = The bug report saved to '{$file_name}'
-
 problem-report-dialog = Problem report
     .file-description = One or more previous application executions that were unsuccessful can be exported and sent for investigation. The report will not contain any video or audio data. This dialog will be displayed the next time you start the program if you close it.
     .success-title = Report creation succeeded

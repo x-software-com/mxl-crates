@@ -220,7 +220,7 @@ impl Component for ProblemReportDialog {
                 }
                 PrivateMsg::CreateReport(path) => {
                     self.file_name = path.to_string_lossy().to_string();
-                    if let Err(err) = crate::proc_dir::failed_dir_archive_and_remove(&path) {
+                    if let Err(err) = crate::proc_dir::archive_and_remove_panics(&path) {
                         widgets
                             .error_page
                             .set_title(&fl!("problem-report-dialog", "error-create-title"));
@@ -238,7 +238,7 @@ impl Component for ProblemReportDialog {
                     self.update_view(widgets, sender);
                 }
                 PrivateMsg::MoveToTrash => {
-                    if let Err(err) = crate::proc_dir::failed_dir_move_to_trash() {
+                    if let Err(err) = crate::proc_dir::move_panics_to_trash() {
                         widgets
                             .error_page
                             .set_title(&fl!("problem-report-dialog", "error-move-title"));
