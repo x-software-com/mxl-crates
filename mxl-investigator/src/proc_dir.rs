@@ -14,7 +14,7 @@ pub const ARCHIVE_DEFAULT_FILE_EXTENSION: &str = "zip";
 pub const ARCHIVE_MIME_TYPE: &str = "application/x-zip";
 
 const CURRENT_DIR_FMT: &str = "%Y-%m-%d_%H_%M_%S";
-const PROC_DIR_NAME: &str = "proc";
+const PROC_DIR_NAME: &str = "run";
 const LOCK_FILE_NAME: &str = "run.lock";
 const REPORT_FILE_NAME: &str = "exit_report.txt";
 const KEEP_NUMBER_OF_RUNS: usize = 20;
