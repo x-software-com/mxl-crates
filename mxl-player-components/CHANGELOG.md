@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.1.6](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.5...mxl-player-components-v0.1.6) - 2025-07-15
+
+### Other
+
+- *(mxl-player-components)* improve hotkeys for changing playback speed
+
 ## [0.1.5](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.4...mxl-player-components-v0.1.5) - 2025-07-14
 
 ### Other
