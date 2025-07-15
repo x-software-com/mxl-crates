@@ -55,9 +55,18 @@ pub fn accelerators(accel: Accelerators) -> Vec<&'static str> {
         Accelerators::Next => vec![action_accelerator_with_os_modifier!("Right"), "AudioNext"],
         Accelerators::IncreaseVolume => vec![action_accelerator_with_os_modifier!("Up")],
         Accelerators::DecreaseVolume => vec![action_accelerator_with_os_modifier!("Down")],
-        Accelerators::IncreaseSpeed => vec![action_accelerator_with_os_modifier!("<Alt>plus")],
-        Accelerators::DecreaseSpeed => vec![action_accelerator_with_os_modifier!("<Alt>minus")],
-        Accelerators::ResetSpeed => vec![action_accelerator_with_os_modifier!("<Alt>0")],
+        Accelerators::IncreaseSpeed => vec![
+            action_accelerator_with_os_modifier!("plus"),
+            action_accelerator_with_os_modifier!("KP_Add"),
+        ],
+        Accelerators::DecreaseSpeed => vec![
+            action_accelerator_with_os_modifier!("minus"),
+            action_accelerator_with_os_modifier!("KP_Subtract"),
+        ],
+        Accelerators::ResetSpeed => vec![
+            action_accelerator_with_os_modifier!("0"),
+            action_accelerator_with_os_modifier!("KP_0"),
+        ],
         Accelerators::FullScreen => vec![action_accelerator_with_os_modifier!("F")],
         Accelerators::DumpPipeline => vec![action_accelerator_with_os_modifier!("<Alt>D")],
         Accelerators::OpenProcDir => vec![action_accelerator_with_os_modifier!("D")],
