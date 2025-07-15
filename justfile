@@ -60,14 +60,14 @@ audit: setup-cargo-audit
 machete: setup-cargo-machete
     cargo machete --with-metadata
 
+upgrades: setup-cargo-upgrades
+    cargo upgrades
+
 cargo-fmt:
     cargo fmt --all
 
 cargo-fmt-check:
     cargo fmt --check
-
-cargo-upgrades: setup-cargo-upgrades
-    cargo upgrades
 
 
 #
