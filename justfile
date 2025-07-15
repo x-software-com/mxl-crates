@@ -10,6 +10,12 @@ rust-toolchain := "stable"
 # Setup the environment:
 #
 
+setup-cargo-edit:
+    cargo install cargo-edit
+
+setup-cargo-upgrades: setup-cargo-edit
+    cargo install cargo-upgrades
+
 setup-cargo-hack:
     cargo install cargo-hack
 
@@ -19,7 +25,7 @@ setup-cargo-audit:
 setup-cargo-machete:
     cargo install cargo-machete
 
-setup: setup-cargo-hack setup-cargo-audit setup-cargo-machete
+setup: setup-cargo-hack setup-cargo-audit setup-cargo-machete setup-cargo-upgrades
     git config pull.rebase true
     git config branch.autoSetupRebase always
     cargo install typos-cli
@@ -59,6 +65,9 @@ cargo-fmt:
 
 cargo-fmt-check:
     cargo fmt --check
+
+cargo-upgrades: setup-cargo-upgrades
+    cargo upgrades
 
 
 #
