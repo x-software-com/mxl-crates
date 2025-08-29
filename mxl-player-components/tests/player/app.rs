@@ -3,6 +3,7 @@ use log::*;
 use mxl_player_components::{
     actions::{self, Accelerators},
     gst_play::PlayMediaInfo,
+    player::MaxLateness,
     ui::{
         player::{
             messages::{PlaybackState, PlayerComponentInput, PlayerComponentOutput},
@@ -218,6 +219,8 @@ impl Component for App {
                     show_seeking_overlay: false,
                     seek_accurate: false,
                     compositor: None,
+                    qos: true,
+                    max_lateness: MaxLateness::Default,
                     draw_callback: Box::new(|_, _| {}),
                     drag_gesture: None,
                     motion_tracker: None,

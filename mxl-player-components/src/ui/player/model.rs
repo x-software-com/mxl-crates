@@ -1,4 +1,4 @@
-use crate::player::{Player, PlayerBuilder};
+use crate::player::{MaxLateness, Player, PlayerBuilder};
 use crate::ui::player::messages::PlaybackState;
 use log::*;
 use mxl_relm4_components::relm4::{gtk, gtk::prelude::*};
@@ -10,6 +10,8 @@ pub struct PlayerComponentInit {
     pub seek_accurate: bool,
     pub show_seeking_overlay: bool,
     pub compositor: Option<gst::Element>,
+    pub qos: bool,
+    pub max_lateness: MaxLateness,
     pub draw_callback: Box<DrawCallbackFn>,
     pub drag_gesture: Option<gtk::GestureDrag>,
     pub motion_tracker: Option<gtk::EventControllerMotion>,
