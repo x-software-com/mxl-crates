@@ -11,7 +11,7 @@ use super::{
     },
     model::{PlayerComponentInit, PlayerComponentModel, ViewData},
 };
-use crate::player::PlayerBuilder;
+use crate::player::{MaxLateness, PlayerBuilder};
 use crate::{localization::helper::fl, ui::player::model::DrawCallbackData};
 
 const SCALE_MULTIPLIER: f64 = 2.0;
@@ -103,6 +103,8 @@ impl Component for PlayerComponentModel {
                     .output_sender()
                     .send(PlayerComponentOutput::PlayerInitialized(None))
                     .unwrap_or_default();
+                player.set_qos(init.qos);
+                player.set_max_lateness(&init.max_lateness);
                 Some(player)
             }
             Err(error) => {
@@ -229,13 +231,10 @@ impl Component for PlayerComponentModel {
                     player.set_volume(vol);
                 }
                 PlayerComponentInput::SetSpeed(speed) => {
-                    let current_speed = player.speed();
                     player.set_speed(speed);
-                    if current_speed != speed {
-                        sender
-                            .output(PlayerComponentOutput::SpeedChanged(speed))
-                            .unwrap_or_default();
-                    }
+                    sender
+                        .output(PlayerComponentOutput::SpeedChanged(speed))
+                        .unwrap_or_default();
                 }
                 PlayerComponentInput::DumpPipeline(label) => {
                     player.dump_pipeline(&label);
@@ -408,6 +407,22 @@ impl Component for PlayerComponentModel {
 }
 
 impl PlayerComponentModel {
+    pub fn set_qos(&self, qos: bool) {
+        if let Some(player) = &self.player {
+            player.set_qos(qos);
+        } else {
+            debug!("Cannot set QOS no player instance")
+        }
+    }
+
+    pub fn set_max_lateness(&self, max_lateness: &MaxLateness) {
+        if let Some(player) = &self.player {
+            player.set_max_lateness(max_lateness);
+        } else {
+            debug!("Cannot set max lateness no player instance")
+        }
+    }
+
     fn set_zoom(
         &mut self,
         new_scale: Option<f64>,

@@ -12,11 +12,20 @@ use crate::ui::player::messages::{PlaybackState, PlayerComponentCommand, Track};
 const GLSINKBIN_NAME: &str = "glsinkbin";
 
 #[derive(Debug)]
+pub enum MaxLateness {
+    Unlimited,
+    Default,
+    Custom(i64),
+}
+
+#[derive(Debug)]
 pub struct PlayerBuilder {
     seek_accurate: bool,
     compositor: Option<gst::Element>,
     audio_offset: i64,
     subtitle_offset: i64,
+    qos: bool,
+    max_lateness: MaxLateness,
 }
 
 impl Default for PlayerBuilder {
@@ -32,6 +41,8 @@ impl PlayerBuilder {
             compositor: None,
             audio_offset: 0,
             subtitle_offset: 0,
+            qos: true,
+            max_lateness: MaxLateness::Default,
         }
     }
 
@@ -52,6 +63,16 @@ impl PlayerBuilder {
 
     pub fn subtitle_offset(&mut self, offset: i64) -> &mut Self {
         self.subtitle_offset = offset;
+        self
+    }
+
+    pub fn qos(&mut self, qos: bool) -> &mut Self {
+        self.qos = qos;
+        self
+    }
+
+    pub fn max_lateness(&mut self, max_lateness: MaxLateness) -> &mut Self {
+        self.max_lateness = max_lateness;
         self
     }
 
@@ -215,6 +236,8 @@ impl PlayerBuilder {
 
         player.set_audio_video_offset(self.audio_offset);
         player.set_subtitle_video_offset(self.subtitle_offset);
+        player.set_qos(self.qos);
+        player.set_max_lateness(&self.max_lateness);
 
         Ok(player)
     }
@@ -371,5 +394,28 @@ impl Player {
         if let Ok(pipeline) = element.downcast::<gst::Pipeline>() {
             pipeline.debug_to_dot_file_with_ts(gst::DebugGraphDetails::all(), label);
         }
+    }
+
+    pub fn set_qos(&self, qos: bool) {
+        debug!("Set qos to {qos}");
+        self.gtk_sink.set_property("qos", qos);
+    }
+
+    pub fn set_max_lateness(&self, max_lateness: &MaxLateness) {
+        let property_name = "max-lateness";
+        let default_value = 5000000_i64;
+        let value = match max_lateness {
+            MaxLateness::Unlimited => -1_i64,
+            MaxLateness::Default => {
+                if let Some(spec) = self.gtk_sink.find_property(property_name) {
+                    spec.default_value().get().unwrap_or(default_value)
+                } else {
+                    default_value
+                }
+            }
+            MaxLateness::Custom(custom) => *custom,
+        };
+        debug!("Set max-lateness to {value}");
+        self.gtk_sink.set_property(property_name, value);
     }
 }
