@@ -22,7 +22,7 @@ log = "0.4"
 const_format = "0.2"
 chrono = "0.4"
 tempfile = "3"
-relm4-icons = "0.9"
+relm4-icons = "0.10"
 # Internationalization:
 i18n-embed-fl = { version = "0.10" }
 rust-embed = { version = "8", features = ["debug-embed"] }
