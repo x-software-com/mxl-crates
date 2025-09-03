@@ -22,3 +22,14 @@ pub fn project_dirs() -> &'static directories::ProjectDirs {
         }
     })
 }
+
+pub fn user_dirs() -> &'static directories::UserDirs {
+    static PROJECT_DIR: OnceLock<directories::UserDirs> = OnceLock::new();
+    PROJECT_DIR.get_or_init(|| {
+        if let Some(dir) = directories::UserDirs::new() {
+            dir
+        } else {
+            panic!("Cannot determine user directories")
+        }
+    })
+}
