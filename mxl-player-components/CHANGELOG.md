@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.7...mxl-player-components-v0.1.8) - 2025-09-29
+
+### Added
+
+- *(mxl-player-components)* add initialization options to customize playlist
+
 ## [0.1.7](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.6...mxl-player-components-v0.1.7) - 2025-09-01
 
 ### Added
