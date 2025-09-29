@@ -28,11 +28,21 @@ pub enum DropState {
 pub struct PlaylistEntryInit {
     pub uri: String,
     pub short_uri: Option<String>,
+    pub media_info: Option<DiscovererInfo>,
     pub error: Option<Error>,
+    pub show_index: bool,
+    pub movable: bool,
+    pub removable: bool,
+    pub drop_files_to_add: bool,
 }
 
+#[derive(Debug)]
 pub struct PlaylistEntryModel {
     pub index: DynamicIndex,
+    pub show_index: bool,
+    pub movable: bool,
+    pub removable: bool,
+    pub drop_files_to_add: bool,
     pub updating: bool,
     pub position: usize,
     active: bool,
@@ -44,6 +54,10 @@ pub struct PlaylistEntryModel {
     pub date_time: Option<DateTime<chrono::Local>>,
     pub error: Option<Error>,
     pub duration: Option<f64>,
+    pub previous_uuid: Option<String>,
+    pub current_uuid: Option<String>,
+    pub next_uuid: Option<String>,
+    pub recorder_machine_id: Option<String>,
     pub media_info: Option<DiscovererInfo>,
     pub notify_debouncer: Option<Debouncer<RecommendedWatcher>>,
 }
@@ -74,6 +88,11 @@ pub enum PlaylistEntryOutput {
 const NOTIFY_TIMEOUT_SECS: u64 = 2;
 const SPACING: i32 = 12;
 const MARGIN: i32 = 4;
+
+const TAG_CURRENT_UUID: &str = "CURRENT_UUID";
+const TAG_NEXT_UUID: &str = "NEXT_UUID";
+const TAG_PREVIOUS_UUID: &str = "PREVIOUS_UUID";
+const TAG_RECORDER_MACHINE_ID: &str = "RECORDER_MACHINE_ID";
 
 #[relm4::factory(pub)]
 impl FactoryComponent for PlaylistEntryModel {
@@ -159,23 +178,42 @@ impl FactoryComponent for PlaylistEntryModel {
                             set_hexpand: true,
                             set_spacing: SPACING * 2,
 
-                            #[name(file_name)]
-                            gtk::Label {
-                                set_hexpand: true,
-                                set_halign: gtk::Align::Start,
-                                set_ellipsize: pango::EllipsizeMode::Middle,
+                            gtk::Box {
+                                gtk::Label {
+                                    #[watch]
+                                    set_visible: self.show_index,
+                                    set_halign: gtk::Align::Start,
+                                    set_ellipsize: pango::EllipsizeMode::Middle,
 
-                                #[watch]
-                                set_css_classes: if self.active {
-                                    &["accent"]
-                                } else {
-                                    &[]
+                                    #[watch]
+                                    set_css_classes: if self.active {
+                                        &["accent"]
+                                    } else {
+                                        &[]
+                                    },
+
+                                    #[watch]
+                                    set_markup: &format!("<b>{} - </b>", self.index.current_index() + 1),
                                 },
 
-                                #[watch]
-                                set_markup: &format!("<b>{}</b>", self.short_uri),
-                                #[watch]
-                                set_tooltip_text: Some(&self.uri),
+                                #[name(file_name)]
+                                gtk::Label {
+                                    set_hexpand: true,
+                                    set_halign: gtk::Align::Start,
+                                    set_ellipsize: pango::EllipsizeMode::Middle,
+
+                                    #[watch]
+                                    set_css_classes: if self.active {
+                                        &["accent"]
+                                    } else {
+                                        &[]
+                                    },
+
+                                    #[watch]
+                                    set_markup: &format!("<b>{}</b>", self.short_uri),
+                                    #[watch]
+                                    set_tooltip_text: Some(&self.uri),
+                                },
                             },
 
                             #[name(duration)]
@@ -214,6 +252,8 @@ impl FactoryComponent for PlaylistEntryModel {
 
                     #[name(remove_button_revealer)]
                     gtk::Revealer {
+                        #[watch]
+                        set_sensitive: self.removable,
                         set_transition_type: gtk::RevealerTransitionType::SlideLeft,
 
                         gtk::Button {
@@ -241,7 +281,7 @@ impl FactoryComponent for PlaylistEntryModel {
     }
 
     fn init_model(init: Self::Init, index: &DynamicIndex, sender: FactorySender<Self>) -> Self {
-        let notify_debouncer = match Self::init_file_watcher(&init.uri, sender)
+        let notify_debouncer = match Self::init_file_watcher(&init.uri, sender.clone())
             .with_context(|| format!("Cannot add watcher for file with uri '{}'", init.uri))
         {
             Ok(debouncer) => Some(debouncer),
@@ -251,8 +291,12 @@ impl FactoryComponent for PlaylistEntryModel {
             }
         };
 
-        Self {
+        let mut model = Self {
             index: index.clone(),
+            show_index: init.show_index,
+            removable: init.removable,
+            movable: init.movable,
+            drop_files_to_add: init.drop_files_to_add,
             updating: false,
             position: 0,
             active: false,
@@ -264,9 +308,22 @@ impl FactoryComponent for PlaylistEntryModel {
             date_time: None,
             error: init.error,
             duration: None,
+            current_uuid: None,
+            next_uuid: None,
+            previous_uuid: None,
+            recorder_machine_id: None,
             media_info: None,
             notify_debouncer,
+        };
+
+        // Apply already known media info to the new playlist entry or send the fetch request:
+        if let Some(media_info) = init.media_info {
+            model.update_media_info(media_info);
+        } else {
+            sender.input(PlaylistEntryInput::FetchMetadata);
         }
+
+        model
     }
 
     fn init_widgets(
@@ -277,7 +334,6 @@ impl FactoryComponent for PlaylistEntryModel {
         sender: FactorySender<Self>,
     ) -> Self::Widgets {
         let widgets = view_output!();
-        sender.input(PlaylistEntryInput::FetchMetadata);
 
         // Add controller to get enter and and leave events:
         let event_manager = gtk::EventControllerMotion::builder().build();
@@ -298,155 +354,162 @@ impl FactoryComponent for PlaylistEntryModel {
         root.add_controller(event_manager);
 
         // Add controller to get key clicks to remove the current entry:
-        let event_manager = gtk::EventControllerKey::builder().build();
-        event_manager.connect_key_pressed(clone!(
-            #[strong]
-            sender,
-            #[strong]
-            index,
-            move |_widget, key, _keycode, _modifier| {
-                if key == gtk::gdk::Key::Delete || key == gtk::gdk::Key::BackSpace {
-                    sender.input(PlaylistEntryInput::Remove(index.clone()));
-                    return gtk::glib::Propagation::Stop;
+        if self.removable {
+            let event_manager = gtk::EventControllerKey::builder().build();
+            event_manager.connect_key_pressed(clone!(
+                #[strong]
+                sender,
+                #[strong]
+                index,
+                move |_widget, key, _keycode, _modifier| {
+                    if key == gtk::gdk::Key::Delete || key == gtk::gdk::Key::BackSpace {
+                        sender.input(PlaylistEntryInput::Remove(index.clone()));
+                        return gtk::glib::Propagation::Stop;
+                    }
+                    gtk::glib::Propagation::Proceed
                 }
-                gtk::glib::Propagation::Proceed
-            }
-        ));
-        root.add_controller(event_manager);
+            ));
+            root.add_controller(event_manager);
+        }
 
-        // Add drang & drop support:
-        let drag_source = gtk::DragSource::builder().actions(gtk::gdk::DragAction::MOVE).build();
-        drag_source.connect_prepare(clone!(
-            #[strong(rename_to = own_index)]
-            index,
-            move |_drag_source, _x, _y| {
-                Some(gtk::gdk::ContentProvider::for_value(
-                    &glib::BoxedAnyObject::new(own_index.clone()).to_value(),
-                ))
-            }
-        ));
-        drag_source.connect_begin(clone!(
-            #[weak]
-            root,
-            move |drag_source, _event| {
-                let paintable = gtk::WidgetPaintable::new(Some(&root));
-                drag_source.set_icon(Some(&paintable), 0, 0);
-            }
-        ));
-        root.add_controller(drag_source);
+        // Add drag & drop support:
+        if self.movable {
+            let drag_source = gtk::DragSource::builder().actions(gtk::gdk::DragAction::MOVE).build();
+            drag_source.connect_prepare(clone!(
+                #[strong(rename_to = own_index)]
+                index,
+                move |_drag_source, _x, _y| {
+                    Some(gtk::gdk::ContentProvider::for_value(
+                        &glib::BoxedAnyObject::new(own_index.clone()).to_value(),
+                    ))
+                }
+            ));
+            drag_source.connect_begin(clone!(
+                #[weak]
+                root,
+                move |drag_source, _event| {
+                    let paintable = gtk::WidgetPaintable::new(Some(&root));
+                    drag_source.set_icon(Some(&paintable), 0, 0);
+                }
+            ));
+            root.add_controller(drag_source);
 
-        let drop_target = gtk::DropTarget::builder().actions(gtk::gdk::DragAction::MOVE).build();
-        drop_target.connect_leave(clone!(
-            #[strong]
-            sender,
-            move |_drop_target| {
-                sender.input(PlaylistEntryInput::SetDropState(DropState::None));
-            }
-        ));
-        drop_target.set_types(&[glib::BoxedAnyObject::static_type()]);
-        drop_target.connect_drop(clone!(
-            #[strong]
-            sender,
-            #[strong(rename_to = own_index)]
-            index,
-            #[weak(rename_to = self_widget)]
-            root,
-            #[upgrade_or]
-            false,
-            move |_drop_target, value, _x, y| {
-                sender.input(PlaylistEntryInput::SetDropState(DropState::None));
-                if let Ok(other_index) = value.get::<glib::BoxedAnyObject>() {
-                    if let Ok(other_index) = other_index.try_borrow::<DynamicIndex>() {
-                        if own_index.current_index() != other_index.current_index() {
-                            let to = if y > self_widget.height() as f64 / 2.0 {
-                                // move after own_index
-                                if own_index.current_index() > other_index.current_index() {
-                                    own_index.current_index()
+            let drop_target = gtk::DropTarget::builder().actions(gtk::gdk::DragAction::MOVE).build();
+            drop_target.connect_leave(clone!(
+                #[strong]
+                sender,
+                move |_drop_target| {
+                    sender.input(PlaylistEntryInput::SetDropState(DropState::None));
+                }
+            ));
+            drop_target.set_types(&[glib::BoxedAnyObject::static_type()]);
+            drop_target.connect_drop(clone!(
+                #[strong]
+                sender,
+                #[strong(rename_to = own_index)]
+                index,
+                #[weak(rename_to = self_widget)]
+                root,
+                #[upgrade_or]
+                false,
+                move |_drop_target, value, _x, y| {
+                    sender.input(PlaylistEntryInput::SetDropState(DropState::None));
+                    if let Ok(other_index) = value.get::<glib::BoxedAnyObject>() {
+                        if let Ok(other_index) = other_index.try_borrow::<DynamicIndex>() {
+                            if own_index.current_index() != other_index.current_index() {
+                                let to = if y > self_widget.height() as f64 / 2.0 {
+                                    // move after own_index
+                                    if own_index.current_index() > other_index.current_index() {
+                                        own_index.current_index()
+                                    } else {
+                                        own_index.current_index() + 1
+                                    }
                                 } else {
-                                    own_index.current_index() + 1
-                                }
-                            } else {
-                                // move before own_index
-                                if own_index.current_index() > other_index.current_index() {
-                                    own_index.current_index() - 1
-                                } else {
-                                    own_index.current_index()
-                                }
-                            };
+                                    // move before own_index
+                                    if own_index.current_index() > other_index.current_index() {
+                                        own_index.current_index() - 1
+                                    } else {
+                                        own_index.current_index()
+                                    }
+                                };
 
-                            sender
-                                .output(PlaylistEntryOutput::Move(other_index.clone(), to))
-                                .unwrap_or_default();
-                            return true;
+                                sender
+                                    .output(PlaylistEntryOutput::Move(other_index.clone(), to))
+                                    .unwrap_or_default();
+                                return true;
+                            }
                         }
                     }
+                    false
                 }
-                false
-            }
-        ));
-        drop_target.connect_motion(clone!(
-            #[strong]
-            sender,
-            #[weak(rename_to = self_widget)]
-            root,
-            #[upgrade_or]
-            gtk::gdk::DragAction::MOVE,
-            move |_drop_target, _x, y| {
-                if y > self_widget.height() as f64 / 2.0 {
-                    sender.input(PlaylistEntryInput::SetDropState(DropState::Below));
-                } else {
-                    sender.input(PlaylistEntryInput::SetDropState(DropState::Above));
-                }
-                gtk::gdk::DragAction::MOVE
-            }
-        ));
-        drop_target.connect_accept(|_drop_target, _drop| true);
-        root.add_controller(drop_target);
-
-        let formats = gtk::gdk::ContentFormatsBuilder::new()
-            .add_type(gtk::gdk::FileList::static_type())
-            .add_type(gtk::gio::File::static_type())
-            .build();
-        let drop_target = gtk::DropTarget::builder()
-            .actions(gtk::gdk::DragAction::COPY)
-            .formats(&formats)
-            .build();
-        drop_target.set_types(&[gtk::gdk::FileList::static_type(), gtk::gio::File::static_type()]);
-        drop_target.connect_drop(clone!(
-            #[strong]
-            index,
-            #[weak(rename_to = self_widget)]
-            root,
-            #[upgrade_or]
-            false,
-            move |_, value, _x, y| {
-                let files = if let Ok(files) = value.get::<gtk::gdk::FileList>() {
-                    let files: Vec<_> = files.files().iter().filter_map(|file| file.path()).collect();
-                    Some(files)
-                } else if let Ok(file) = value.get::<gtk::gio::File>() {
-                    file.path().map(|file| vec![file])
-                } else {
-                    None
-                };
-                if let Some(files) = files {
-                    sender.input(PlaylistEntryInput::SetDropState(DropState::None));
+            ));
+            drop_target.connect_motion(clone!(
+                #[strong]
+                sender,
+                #[weak(rename_to = self_widget)]
+                root,
+                #[upgrade_or]
+                gtk::gdk::DragAction::MOVE,
+                move |_drop_target, _x, y| {
                     if y > self_widget.height() as f64 / 2.0 {
-                        // add after own index
-                        sender
-                            .output(PlaylistEntryOutput::AddAfter(index.clone(), files))
-                            .unwrap_or_default();
+                        sender.input(PlaylistEntryInput::SetDropState(DropState::Below));
                     } else {
-                        // add before own index
-                        sender
-                            .output(PlaylistEntryOutput::AddBefore(index.clone(), files))
-                            .unwrap_or_default();
+                        sender.input(PlaylistEntryInput::SetDropState(DropState::Above));
                     }
-                    return true;
+                    gtk::gdk::DragAction::MOVE
                 }
-                false
-            }
-        ));
-        root.add_controller(drop_target);
+            ));
+            drop_target.connect_accept(|_drop_target, _drop| true);
+            root.add_controller(drop_target);
+        }
+
+        // Add support to drop new files after or before an existing playlist entry:
+        if self.drop_files_to_add {
+            let formats = gtk::gdk::ContentFormatsBuilder::new()
+                .add_type(gtk::gdk::FileList::static_type())
+                .add_type(gtk::gio::File::static_type())
+                .build();
+            let drop_target = gtk::DropTarget::builder()
+                .actions(gtk::gdk::DragAction::COPY)
+                .formats(&formats)
+                .build();
+            drop_target.set_types(&[gtk::gdk::FileList::static_type(), gtk::gio::File::static_type()]);
+            drop_target.connect_drop(clone!(
+                #[strong]
+                index,
+                #[weak(rename_to = self_widget)]
+                root,
+                #[upgrade_or]
+                false,
+                move |_, value, _x, y| {
+                    let files = if let Ok(files) = value.get::<gtk::gdk::FileList>() {
+                        let files: Vec<_> = files.files().iter().filter_map(|file| file.path()).collect();
+                        Some(files)
+                    } else if let Ok(file) = value.get::<gtk::gio::File>() {
+                        file.path().map(|file| vec![file])
+                    } else {
+                        None
+                    };
+                    if let Some(files) = files {
+                        sender.input(PlaylistEntryInput::SetDropState(DropState::None));
+                        if y > self_widget.height() as f64 / 2.0 {
+                            // add after own index
+                            sender
+                                .output(PlaylistEntryOutput::AddAfter(index.clone(), files))
+                                .unwrap_or_default();
+                        } else {
+                            // add before own index
+                            sender
+                                .output(PlaylistEntryOutput::AddBefore(index.clone(), files))
+                                .unwrap_or_default();
+                        }
+                        return true;
+                    }
+                    false
+                }
+            ));
+            root.add_controller(drop_target);
+        }
 
         widgets
     }
@@ -509,56 +572,7 @@ impl PlaylistEntryModel {
         self.info_tooltip = None;
         match result {
             Err(error) => self.error = Some(error),
-            Ok(info) => {
-                trace_media_info(&info);
-                self.uri = info.uri().to_string();
-                match info.result() {
-                    DiscovererResult::Ok => {
-                        if let Some(duration) = info.duration() {
-                            self.duration = Some(duration.mseconds() as f64 / 1000_f64);
-                            self.duration_text = format!("<span font_desc=\"monospace\">{duration:.0}</span>");
-                        }
-                        if let Some(info) = info.stream_info() {
-                            if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
-                                if let Some(tags) = info.tags() {
-                                    if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
-                                        match date_time.get().to_iso8601_string() {
-                                            Ok(iso_string) => match iso_string.parse::<DateTime<chrono::Local>>() {
-                                                Ok(chrono_time) => {
-                                                    self.info_text = chrono_time.to_rfc2822();
-                                                    self.date_time = Some(chrono_time);
-                                                }
-                                                Err(_) => self.info_text = format!("{}", date_time.get()),
-                                            },
-                                            Err(_) => self.info_text = format!("{}", date_time.get()),
-                                        }
-                                    } else {
-                                        "".clone_into(&mut self.info_text);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    DiscovererResult::MissingPlugins => {
-                        let details: Vec<_> = info
-                            .missing_elements_installer_details()
-                            .iter()
-                            .map(|x| x.to_string())
-                            .collect();
-                        self.error = Some(anyhow::anyhow!("{}", details.join(", ")));
-                    }
-                    DiscovererResult::UriInvalid => {
-                        self.error = Some(anyhow::anyhow!(fl!("invalid-uri", uri = self.uri.clone())));
-                    }
-                    DiscovererResult::Timeout => {
-                        self.error = Some(anyhow::anyhow!(fl!("file-discovery-timeout")));
-                    }
-                    DiscovererResult::Busy => unreachable!(),
-                    DiscovererResult::Error => unreachable!(),
-                    _ => (),
-                }
-                self.media_info = Some(info);
-            }
+            Ok(info) => self.update_media_info(info),
         }
         if let Some(error) = &self.error {
             self.info_text = format!("{error:?}");
@@ -567,6 +581,61 @@ impl PlaylistEntryModel {
         sender
             .output(PlaylistEntryOutput::Updated(self.index.clone()))
             .unwrap_or_default();
+    }
+
+    fn update_media_info(&mut self, info: DiscovererInfo) {
+        trace_media_info(&info);
+        self.uri = info.uri().to_string();
+        match info.result() {
+            DiscovererResult::Ok => {
+                if let Some(duration) = info.duration() {
+                    self.duration = Some(duration.mseconds() as f64 / 1000_f64);
+                    self.duration_text = format!("<span font_desc=\"monospace\">{duration:.0}</span>");
+                }
+                if let Some(info) = info.stream_info() {
+                    if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
+                        if let Some(tags) = info.tags() {
+                            if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
+                                match date_time.get().to_iso8601_string() {
+                                    Ok(iso_string) => match iso_string.parse::<DateTime<chrono::Local>>() {
+                                        Ok(chrono_time) => {
+                                            self.info_text = chrono_time.to_rfc2822();
+                                            self.date_time = Some(chrono_time);
+                                        }
+                                        Err(_) => self.info_text = format!("{}", date_time.get()),
+                                    },
+                                    Err(_) => self.info_text = format!("{}", date_time.get()),
+                                }
+                            } else {
+                                "".clone_into(&mut self.info_text);
+                            }
+                        }
+                    }
+                }
+                self.current_uuid = media_info_get_global_tag(TAG_CURRENT_UUID, &info);
+                self.next_uuid = media_info_get_global_tag(TAG_NEXT_UUID, &info);
+                self.previous_uuid = media_info_get_global_tag(TAG_PREVIOUS_UUID, &info);
+                self.recorder_machine_id = media_info_get_global_tag(TAG_RECORDER_MACHINE_ID, &info);
+            }
+            DiscovererResult::MissingPlugins => {
+                let details: Vec<_> = info
+                    .missing_elements_installer_details()
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect();
+                self.error = Some(anyhow::anyhow!("{}", details.join(", ")));
+            }
+            DiscovererResult::UriInvalid => {
+                self.error = Some(anyhow::anyhow!(fl!("invalid-uri", uri = self.uri.clone())));
+            }
+            DiscovererResult::Timeout => {
+                self.error = Some(anyhow::anyhow!(fl!("file-discovery-timeout")));
+            }
+            DiscovererResult::Busy => unreachable!(),
+            DiscovererResult::Error => unreachable!(),
+            _ => (),
+        }
+        self.media_info = Some(info);
     }
 
     fn init_file_watcher(uri_str: &str, sender: FactorySender<Self>) -> Result<Debouncer<RecommendedWatcher>> {
@@ -587,6 +656,67 @@ impl PlaylistEntryModel {
             .watch(Path::new(&file_path), RecursiveMode::NonRecursive)?;
 
         Ok(debouncer)
+    }
+}
+
+fn media_info_get_global_tag(name: &str, info: &DiscovererInfo) -> Option<String> {
+    if info.result() == DiscovererResult::Ok {
+        if let Some(info) = info.stream_info() {
+            if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
+                if let Some(tag) = find_tag_in_tag_list(name, info.tags().as_ref()) {
+                    return Some(tag);
+                }
+            }
+        }
+        for stream in info.container_streams() {
+            if let Some(tag) = find_tag_in_tag_list(name, stream.tags().as_ref()) {
+                return Some(tag);
+            }
+        }
+    }
+    None
+}
+
+fn find_tag_in_tag_list(search_name: &str, tags: Option<&TagList>) -> Option<String> {
+    if let Some(tags) = tags {
+        for (name, values) in tags.iter_generic() {
+            for value in values {
+                if let Some(tag) = get_tag_value(search_name, name, value) {
+                    return Some(tag);
+                }
+            }
+        }
+    }
+    None
+}
+
+fn get_tag_value(search_name: &str, name: &str, value: &gst::glib::value::SendValue) -> Option<String> {
+    let get_tag_value = |value: &gst::glib::value::SendValue| -> Option<String> {
+        if let Ok(s) = value.get::<&str>() {
+            Some(s.to_string())
+        } else {
+            None
+        }
+    };
+
+    if let Some(value) = get_tag_value(value) {
+        if name == gst::tags::ExtendedComment::TAG_NAME {
+            if let Ok(ext_comment) = gst_tag::tag_parse_extended_comment(&value, true) {
+                if ext_comment.key.unwrap_or_default() == search_name {
+                    Some(ext_comment.value.to_string())
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        } else if name == search_name {
+            Some(value)
+        } else {
+            None
+        }
+    } else {
+        None
     }
 }
 

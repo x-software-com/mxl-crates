@@ -39,6 +39,8 @@ impl Component for PlaylistComponentModel {
                 set_show_end_title_buttons: false,
                 set_title_widget: Some(&gtk::Label::new(Some(&fl!("playlist")))),
                 pack_start = &gtk::Button {
+                    #[watch]
+                    set_visible: model.is_user_mutable,
                     set_has_tooltip: true,
                     set_tooltip_text: Some(&fl!("add-file")),
                     set_icon_name: icon_names::PLUS,
@@ -47,6 +49,8 @@ impl Component for PlaylistComponentModel {
                     connect_clicked => PlaylistComponentInput::FileChooserRequest,
                 },
                 pack_end = &gtk::Button {
+                    #[watch]
+                    set_sensitive: model.is_user_mutable,
                     set_has_tooltip: true,
                     #[watch]
                     set_tooltip_text: Some(match model.repeat {
@@ -64,6 +68,9 @@ impl Component for PlaylistComponentModel {
                 },
                  pack_end = &gtk::MenuButton {
                     set_label: &fl!("sort-by"),
+                    #[watch]
+                    set_visible: model.is_user_mutable,
+
 
                     set_menu_model: Some(&{
                         let menu_model = gtk::gio::Menu::new();
@@ -156,18 +163,34 @@ impl Component for PlaylistComponentModel {
             uris,
             index: None,
             state: PlaylistState::Stopped,
+            show_file_index: init.show_file_index,
             show_placeholder: init.uris.is_empty(),
-            repeat: RepeatMode::Off,
+            repeat: init.repeat,
             thread_pool: Some(PlaylistComponentModel::init_thread_pool()),
+            is_user_mutable: init.is_user_mutable,
         };
 
+        // Add URIs to model:
         model.add_uris(&sender, InsertMode::Back, &init.uris);
+
+        // Mark as playing:
+        if let Some(index) = init.mark_index_as_playing {
+            let mut guard = model.uris.guard();
+            if let Some(e) = guard.get_mut(index) {
+                model.index = Some(e.index.clone());
+            }
+            if let Some(i) = &model.index {
+                guard.send(i.current_index(), PlaylistEntryInput::Activate);
+            }
+        }
 
         let file_list_box = model.uris.widget();
         let widgets: PlaylistComponentModelWidgets = view_output!();
-        widgets
-            .drop_box
-            .add_controller(PlaylistComponentModel::new_drop_target(sender.input_sender().clone()));
+        if model.is_user_mutable {
+            widgets
+                .drop_box
+                .add_controller(PlaylistComponentModel::new_drop_target(sender.input_sender().clone()));
+        }
 
         ComponentParts { model, widgets }
     }
@@ -229,10 +252,18 @@ impl Component for PlaylistComponentModel {
                     .unwrap_or_default();
             }
             PlaylistComponentInput::Add(files) => {
-                self.add_uris(&sender, InsertMode::Back, &files);
+                self.add_uris(
+                    &sender,
+                    InsertMode::Back,
+                    &files.into_iter().map(|x| x.into()).collect(),
+                );
             }
             PlaylistComponentInput::AddBefore(index, files) => {
-                self.add_uris(&sender, InsertMode::AtIndex(index), &files);
+                self.add_uris(
+                    &sender,
+                    InsertMode::AtIndex(index),
+                    &files.into_iter().map(|x| x.into()).collect(),
+                );
             }
             PlaylistComponentInput::AddAfter(index, files) => {
                 let edit = self.uris.guard();
@@ -240,10 +271,18 @@ impl Component for PlaylistComponentModel {
                     if let Some(index) = edit.get(index) {
                         let index = index.index.clone();
                         drop(edit);
-                        self.add_uris(&sender, InsertMode::AtIndex(index), &files);
+                        self.add_uris(
+                            &sender,
+                            InsertMode::AtIndex(index),
+                            &files.into_iter().map(|x| x.into()).collect(),
+                        );
                     } else {
                         drop(edit);
-                        self.add_uris(&sender, InsertMode::Back, &files);
+                        self.add_uris(
+                            &sender,
+                            InsertMode::Back,
+                            &files.into_iter().map(|x| x.into()).collect(),
+                        );
                     }
                 }
             }

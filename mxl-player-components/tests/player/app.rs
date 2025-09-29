@@ -10,7 +10,7 @@ use mxl_player_components::{
             model::{PlayerComponentInit, PlayerComponentModel},
         },
         playlist::{
-            messages::{PlaylistChange, PlaylistComponentInput, PlaylistComponentOutput, PlaylistState},
+            messages::{PlaylistChange, PlaylistComponentInput, PlaylistComponentOutput, PlaylistState, RepeatMode},
             model::{PlaylistComponentInit, PlaylistComponentModel},
         },
     },
@@ -204,7 +204,13 @@ impl Component for App {
         });
 
         let playlist_component = PlaylistComponentModel::builder()
-            .launch(PlaylistComponentInit { uris: app_init.uris })
+            .launch(PlaylistComponentInit {
+                uris: app_init.uris.into_iter().map(|x| x.into()).collect(),
+                mark_index_as_playing: None,
+                repeat: RepeatMode::Off,
+                is_user_mutable: true,
+                show_file_index: true,
+            })
             .forward(sender.command_sender(), |msg| match msg {
                 PlaylistComponentOutput::PlaylistChanged(x) => AppCmd::PlaylistChanged(x),
                 PlaylistComponentOutput::SwitchUri(x) => AppCmd::PlaylistSwitchUri(x),

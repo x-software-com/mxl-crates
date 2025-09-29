@@ -1,3 +1,4 @@
+use gst_pbutils::DiscovererInfo;
 use log::*;
 use mxl_relm4_components::relm4::{
     Sender, adw::prelude::*, factory::FactoryVecDeque, gtk::gdk::DragAction, prelude::*,
@@ -13,18 +14,39 @@ use crate::uri_helpers::uri_from_pathbuf;
 use super::factory::PlaylistEntryInit;
 pub use super::factory::PlaylistEntryModel;
 
+#[derive(Debug, Clone)]
+pub struct PlaylistEntry {
+    pub uri: PathBuf,
+    pub media_info: Option<DiscovererInfo>,
+}
+
+impl From<PathBuf> for PlaylistEntry {
+    fn from(uri: PathBuf) -> Self {
+        PlaylistEntry {
+            uri: uri.clone(),
+            media_info: None,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct PlaylistComponentInit {
-    pub uris: Vec<PathBuf>,
+    pub uris: Vec<PlaylistEntry>,
+    pub mark_index_as_playing: Option<usize>,
+    pub repeat: RepeatMode,
+    pub is_user_mutable: bool,
+    pub show_file_index: bool,
 }
 
 pub struct PlaylistComponentModel {
     pub uris: FactoryVecDeque<PlaylistEntryModel>,
     pub index: Option<DynamicIndex>,
     pub state: PlaylistState,
+    pub show_file_index: bool,
     pub show_placeholder: bool,
     pub repeat: RepeatMode,
     pub thread_pool: Option<rusty_pool::ThreadPool>,
+    pub is_user_mutable: bool,
 }
 
 #[allow(dead_code)]
@@ -80,7 +102,12 @@ impl PlaylistComponentModel {
         drop_target
     }
 
-    pub(super) fn add_uris(&mut self, sender: &ComponentSender<Self>, insert_mode: InsertMode, uris: &Vec<PathBuf>) {
+    pub(super) fn add_uris(
+        &mut self,
+        sender: &ComponentSender<Self>,
+        insert_mode: InsertMode,
+        uris: &Vec<PlaylistEntry>,
+    ) {
         macro_rules! insert {
             ($edit:expr, $insert_mode:expr, $entry:expr) => {
                 match &$insert_mode {
@@ -98,10 +125,13 @@ impl PlaylistComponentModel {
         }
 
         let mut edit = self.uris.guard();
-        for uri in uris {
-            match uri_from_pathbuf(uri) {
+        for entry in uris {
+            match uri_from_pathbuf(&entry.uri) {
                 Ok(file) => {
-                    let file_name = uri.file_name().map(|x| x.to_str().unwrap_or_default().to_string());
+                    let file_name = entry
+                        .uri
+                        .file_name()
+                        .map(|x| x.to_str().unwrap_or_default().to_string());
 
                     insert!(
                         edit,
@@ -109,13 +139,21 @@ impl PlaylistComponentModel {
                         PlaylistEntryInit {
                             uri: file,
                             short_uri: file_name,
+                            media_info: entry.media_info.clone(),
                             error: None,
+                            show_index: self.show_file_index,
+                            movable: self.is_user_mutable,
+                            removable: self.is_user_mutable,
+                            drop_files_to_add: self.is_user_mutable,
                         }
                     );
                 }
                 Err(error) => {
-                    let file_name = uri.file_name().map(|x| x.to_str().unwrap_or_default().to_string());
-                    let file = uri.to_str().unwrap_or_default().to_string();
+                    let file_name = entry
+                        .uri
+                        .file_name()
+                        .map(|x| x.to_str().unwrap_or_default().to_string());
+                    let file = entry.uri.to_str().unwrap_or_default().to_string();
 
                     insert!(
                         edit,
@@ -123,7 +161,12 @@ impl PlaylistComponentModel {
                         PlaylistEntryInit {
                             uri: file,
                             short_uri: file_name,
+                            media_info: entry.media_info.clone(),
                             error: Some(error),
+                            show_index: self.show_file_index,
+                            movable: self.is_user_mutable,
+                            removable: self.is_user_mutable,
+                            drop_files_to_add: self.is_user_mutable,
                         }
                     );
                 }
