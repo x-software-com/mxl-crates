@@ -38,6 +38,18 @@ pub struct PlaylistComponentInit {
     pub show_file_index: bool,
 }
 
+impl Default for PlaylistComponentInit {
+    fn default() -> Self {
+        Self {
+            uris: vec![],
+            mark_index_as_playing: None,
+            repeat: RepeatMode::default(),
+            is_user_mutable: true,
+            show_file_index: false,
+        }
+    }
+}
+
 pub struct PlaylistComponentModel {
     pub uris: FactoryVecDeque<PlaylistEntryModel>,
     pub index: Option<DynamicIndex>,
