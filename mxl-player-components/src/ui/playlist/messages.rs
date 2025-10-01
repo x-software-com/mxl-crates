@@ -8,8 +8,9 @@ pub enum PlaylistState {
     Stopping,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub enum RepeatMode {
+    #[default]
     Off,
     All,
 }

@@ -12,9 +12,24 @@ pub struct PlayerComponentInit {
     pub compositor: Option<gst::Element>,
     pub qos: bool,
     pub max_lateness: MaxLateness,
-    pub draw_callback: Box<DrawCallbackFn>,
+    pub draw_callback: Option<Box<DrawCallbackFn>>,
     pub drag_gesture: Option<gtk::GestureDrag>,
     pub motion_tracker: Option<gtk::EventControllerMotion>,
+}
+
+impl Default for PlayerComponentInit {
+    fn default() -> Self {
+        Self {
+            seek_accurate: true,
+            show_seeking_overlay: false,
+            compositor: None,
+            qos: false,
+            max_lateness: Default::default(),
+            draw_callback: None,
+            drag_gesture: None,
+            motion_tracker: None,
+        }
+    }
 }
 
 #[derive(Debug, Default)]
@@ -34,18 +49,6 @@ pub(super) struct ViewData {
     pub(super) video_view: VideoViewData,
 }
 
-pub(super) struct DrawCallbackData {
-    pub(super) draw_callback: Box<DrawCallbackFn>,
-}
-
-impl DrawCallbackData {
-    pub(super) fn new(callback: Box<DrawCallbackFn>) -> Self {
-        Self {
-            draw_callback: callback,
-        }
-    }
-}
-
 pub struct PlayerComponentModel {
     pub(super) player_builder: PlayerBuilder,
     pub(super) player: Option<Player>,
@@ -54,7 +57,6 @@ pub struct PlayerComponentModel {
     pub(super) seeking: bool,
     pub(super) show_drawing_overlay: bool,
     pub(super) view_data: Rc<Mutex<ViewData>>,
-    pub(super) draw_callback: Rc<Mutex<DrawCallbackData>>,
     pub(super) drag_position: Option<(f64, f64)>,
     pub(super) mouse_position: Option<(f64, f64)>,
 }

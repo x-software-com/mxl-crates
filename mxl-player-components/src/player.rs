@@ -11,9 +11,10 @@ use crate::ui::player::messages::{PlaybackState, PlayerComponentCommand, Track};
 
 const GLSINKBIN_NAME: &str = "glsinkbin";
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub enum MaxLateness {
     Unlimited,
+    #[default]
     Default,
     Custom(i64),
 }

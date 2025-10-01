@@ -3,14 +3,13 @@ use log::*;
 use mxl_player_components::{
     actions::{self, Accelerators},
     gst_play::PlayMediaInfo,
-    player::MaxLateness,
     ui::{
         player::{
             messages::{PlaybackState, PlayerComponentInput, PlayerComponentOutput},
             model::{PlayerComponentInit, PlayerComponentModel},
         },
         playlist::{
-            messages::{PlaylistChange, PlaylistComponentInput, PlaylistComponentOutput, PlaylistState, RepeatMode},
+            messages::{PlaylistChange, PlaylistComponentInput, PlaylistComponentOutput, PlaylistState},
             model::{PlaylistComponentInit, PlaylistComponentModel},
         },
     },
@@ -206,10 +205,7 @@ impl Component for App {
         let playlist_component = PlaylistComponentModel::builder()
             .launch(PlaylistComponentInit {
                 uris: app_init.uris.into_iter().map(|x| x.into()).collect(),
-                mark_index_as_playing: None,
-                repeat: RepeatMode::Off,
-                is_user_mutable: true,
-                show_file_index: true,
+                ..Default::default()
             })
             .forward(sender.command_sender(), |msg| match msg {
                 PlaylistComponentOutput::PlaylistChanged(x) => AppCmd::PlaylistChanged(x),
@@ -221,16 +217,7 @@ impl Component for App {
 
         let player_component = {
             PlayerComponentModel::builder()
-                .launch(PlayerComponentInit {
-                    show_seeking_overlay: false,
-                    seek_accurate: false,
-                    compositor: None,
-                    qos: true,
-                    max_lateness: MaxLateness::Default,
-                    draw_callback: Box::new(|_, _| {}),
-                    drag_gesture: None,
-                    motion_tracker: None,
-                })
+                .launch(PlayerComponentInit::default())
                 .forward(sender.command_sender(), |msg| match msg {
                     PlayerComponentOutput::PlayerInitialized(x) => AppCmd::PlayerInitialized(x),
                     PlayerComponentOutput::MediaInfoUpdated(x) => AppCmd::PlayerMediaInfoUpdated(x),
