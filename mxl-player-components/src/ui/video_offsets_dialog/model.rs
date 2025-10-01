@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct VideoOffsetsComponentInit {
     pub audio_video_offset: i64,
     pub subtitle_video_offset: i64,

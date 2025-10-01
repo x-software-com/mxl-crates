@@ -11,8 +11,10 @@ use super::{
     },
     model::{PlayerComponentInit, PlayerComponentModel, ViewData},
 };
-use crate::player::{MaxLateness, PlayerBuilder};
-use crate::{localization::helper::fl, ui::player::model::DrawCallbackData};
+use crate::{
+    localization::helper::fl,
+    player::{MaxLateness, PlayerBuilder},
+};
 
 const SCALE_MULTIPLIER: f64 = 2.0;
 
@@ -124,7 +126,6 @@ impl Component for PlayerComponentModel {
             seeking: false,
             show_drawing_overlay: false,
             view_data: Rc::new(Mutex::new(ViewData::default())),
-            draw_callback: Rc::new(Mutex::new(DrawCallbackData::new(init.draw_callback))),
             drag_position: None,
             mouse_position: None,
         };
@@ -145,33 +146,32 @@ impl Component for PlayerComponentModel {
             ]);
         }
 
-        widgets.drawing_overlay.set_draw_func(clone!(
-            #[weak(rename_to = draw_callback)]
-            model.draw_callback,
-            #[weak(rename_to = view_data)]
-            model.view_data,
-            #[strong(rename_to = video_scrolled_window)]
-            widgets.video_scrolled_window,
-            #[strong(rename_to = video_picture)]
-            widgets.video_picture,
-            move |_drawing_area, context, w, h| {
-                trace!("Drawing func called... w={w} h={h}");
-                let mut view_data = view_data.lock().unwrap();
-                if view_data.video_view.drawing_area.is_none() {
-                    view_data.video_view.drawing_area = Some(VideoRectangle::new(0, 0, w, h));
-                } else if let Some(drawing_area) = &mut view_data.video_view.drawing_area {
-                    if drawing_area.w != w || drawing_area.h != h {
-                        drawing_area.w = w;
-                        drawing_area.h = h;
+        if let Some(draw_callback) = init.draw_callback {
+            widgets.drawing_overlay.set_draw_func(clone!(
+                #[weak(rename_to = view_data)]
+                model.view_data,
+                #[strong(rename_to = video_scrolled_window)]
+                widgets.video_scrolled_window,
+                #[strong(rename_to = video_picture)]
+                widgets.video_picture,
+                move |_drawing_area, context, w, h| {
+                    trace!("Drawing func called... w={w} h={h}");
+                    let mut view_data = view_data.lock().unwrap();
+                    if view_data.video_view.drawing_area.is_none() {
+                        view_data.video_view.drawing_area = Some(VideoRectangle::new(0, 0, w, h));
+                    } else if let Some(drawing_area) = &mut view_data.video_view.drawing_area {
+                        if drawing_area.w != w || drawing_area.h != h {
+                            drawing_area.w = w;
+                            drawing_area.h = h;
+                        }
                     }
+                    view_data
+                        .video_view
+                        .update(None, &video_scrolled_window, &video_picture);
+                    (draw_callback)(context, view_data.video_view.borrow_mut());
                 }
-                view_data
-                    .video_view
-                    .update(None, &video_scrolled_window, &video_picture);
-                let draw_callback = draw_callback.lock().unwrap();
-                (draw_callback.draw_callback)(context, view_data.video_view.borrow_mut());
-            }
-        ));
+            ));
+        }
 
         if let Some(drag_gesture) = init.drag_gesture {
             widgets.drawing_overlay.add_controller(drag_gesture);

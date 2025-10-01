@@ -36,14 +36,14 @@ impl CodecInfoListBuilder {
         Self { codec_infos: a }
     }
 
-    pub fn ignore(&mut self, name: String) -> &mut Self {
+    pub fn ignore(mut self, name: String) -> Self {
         if let Some(index) = self.codec_infos.iter().position(|i| i.name == name) {
             self.codec_infos.remove(index);
         }
         self
     }
 
-    pub fn build(&self) -> CodecInfoList {
-        self.codec_infos.clone()
+    pub fn build(self) -> CodecInfoList {
+        self.codec_infos
     }
 }
