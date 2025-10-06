@@ -19,7 +19,7 @@ chrono.workspace = true
 tempfile = { workspace = true, optional = true }
 relm4-icons = { workspace = true, optional = true }
 fs4 = "0.13"
-zip = "4"
+zip = "5"
 walkdir = "2"
 trash = "5"
 urlencoding = { version = "2", default-features = false, optional = true }
