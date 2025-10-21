@@ -23,4 +23,7 @@ __pycache__
 .mxl-env
 
 # Ignore the project specific cargo directory for NixOS
-.cargo
+.cargo-cache
+
+# Ignore the project specific rustup directory for NixOS
+.rustup

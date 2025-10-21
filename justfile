@@ -79,3 +79,11 @@ self-update:
 
 clean:
     cargo clean
+
+clean-build: clean
+    find . -name "config.rs" -delete
+    find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
+
+clean-cache: clean-build
+    rm -rf .cargo-cache
+    @echo "Cleaned all cache directories"
