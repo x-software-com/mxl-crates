@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.10...mxl-base-v0.3.0) - 2025-10-23
+
+### Other
+
+- generic log directory removed and log level filter added for the console
+
 ## [0.2.10](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.9...mxl-base-v0.2.10) - 2025-09-03
 
 ### Added
