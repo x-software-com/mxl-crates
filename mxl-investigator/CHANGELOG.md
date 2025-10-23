@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.2](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.1...mxl-investigator-v0.2.2) - 2025-10-23
+
+### Other
+
+- *(deps)* update zip requirement from 4 to 6
+- *(deps)* update sysinfo requirement from 0.36 to 0.37
+
 ## [0.2.1](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.0...mxl-investigator-v0.2.1) - 2025-07-15
 
 ### Fixed
