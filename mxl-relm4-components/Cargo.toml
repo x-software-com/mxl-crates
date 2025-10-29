@@ -26,3 +26,6 @@ i18n-embed.workspace = true
 
 [features]
 third_party_licenses_dialog = ["dep:sancus", "relm4-icons/all"]
+
+[package.metadata.cargo-machete]
+ignored = ["sancus"]
