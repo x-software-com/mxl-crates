@@ -13,7 +13,7 @@ name: check
 jobs:
   conventional_commit:
     name: conventional commit check
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v5
@@ -27,7 +27,7 @@ jobs:
           command: check
   conventional_commit_pr:
     name: PR conventional commit check
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v5
@@ -43,7 +43,7 @@ jobs:
           command: check
   typos:
     name: typos
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       checks: write
@@ -55,7 +55,7 @@ jobs:
         uses: crate-ci/typos@v1.38.1
   clippy:
     name: ${{ matrix.toolchain }} / clippy
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       checks: write
@@ -78,7 +78,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   audit:
     name: cargo audit
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       checks: write
@@ -96,7 +96,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   hack:
     name: hack
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       checks: write
@@ -115,7 +115,7 @@ jobs:
           just hack
   test:
     name: test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
