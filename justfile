@@ -25,7 +25,10 @@ setup-cargo-audit:
 setup-cargo-machete:
     cargo install cargo-machete
 
-setup: setup-cargo-hack setup-cargo-audit setup-cargo-machete setup-cargo-upgrades
+setup-cargo-deny:
+    cargo install cargo-deny
+
+setup: setup-cargo-upgrades setup-cargo-hack setup-cargo-audit setup-cargo-machete setup-cargo-deny
     git config pull.rebase true
     git config branch.autoSetupRebase always
     cargo install typos-cli
@@ -62,6 +65,12 @@ machete: setup-cargo-machete
 
 upgrades: setup-cargo-upgrades
     cargo upgrades
+
+deny-licenses: setup-cargo-deny
+    cargo deny --all-features check licenses
+
+deny: setup-cargo-deny
+    cargo deny --all-features check
 
 cargo-fmt:
     cargo fmt --all
