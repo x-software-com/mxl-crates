@@ -14,8 +14,6 @@ rust-version.workspace = true
 [dependencies]
 anyhow.workspace = true
 log.workspace = true
-const_format.workspace = true
-chrono.workspace = true
 fern = "0.7"
 directories = "6"
 
