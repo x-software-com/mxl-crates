@@ -113,6 +113,38 @@ jobs:
         run: |
           source /etc/profile
           just hack
+  deny-licenses:
+    name: deny-licenses
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Setup MXL crates Components build environment
+        uses: ./.github/workflows/mxl-setup
+        with:
+          rust-toolchain: stable
+      - name: cargo deny check licenses
+        shell: bash {0}
+        run: |
+          source /etc/profile
+          just deny-licenses
+  detect-unused-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Setup MXL crates Components build environment
+        uses: ./.github/workflows/mxl-setup
+        with:
+          rust-toolchain: stable
+      - name: Machete
+        uses: bnjbvr/cargo-machete@v0.9.1
   test:
     name: test
     runs-on: ubuntu-latest
