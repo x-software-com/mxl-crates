@@ -31,4 +31,4 @@ third_party_licenses_dialog = ["dep:sancus", "relm4-icons"]
 relm4-icons-build.workspace = true
 
 [package.metadata.cargo-machete]
-ignored = ["relm4-icons-build"]
+ignored = ["relm4-icons-build", "sancus"]

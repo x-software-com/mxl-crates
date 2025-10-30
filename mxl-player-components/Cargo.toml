@@ -57,4 +57,4 @@ env_logger = "0.11"
 relm4-icons-build.workspace = true
 
 [package.metadata.cargo-machete]
-ignored = ["relm4-icons-build"]
+ignored = ["relm4-icons-build", "gst-plugin-gtk4"]
