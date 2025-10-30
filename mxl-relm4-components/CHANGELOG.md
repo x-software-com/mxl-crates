@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.8](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.7...mxl-relm4-components-v0.2.8) - 2025-10-30
+
+### Added
+
+- upgrade dependencies relm4 and gstreamer
+
+### Other
+
+- fix cargo machete unused dependencies
+- add license documents to any crate
+- add github workflows action (cargo-deny and cargo-machete) ([#107](https://github.com/x-software-com/mxl-crates/pull/107))
+
 ## [0.2.7](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.6...mxl-relm4-components-v0.2.7) - 2025-07-14
 
 ### Other

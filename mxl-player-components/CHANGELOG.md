@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.10](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.9...mxl-player-components-v0.1.10) - 2025-10-30
+
+### Added
+
+- upgrade dependencies relm4 and gstreamer
+
+### Other
+
+- fix cargo machete unused dependencies
+- downgrade gstreamer features from v1_26 to v1_24
+- replace "notify-debouncer-mini" by "notify-debouncer-full"
+- add license documents to any crate
+- add github workflows action (cargo-deny and cargo-machete) ([#107](https://github.com/x-software-com/mxl-crates/pull/107))
+
 ## [0.1.9](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.8...mxl-player-components-v0.1.9) - 2025-10-06
 
 ### Other

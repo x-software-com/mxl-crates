@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.3.0...mxl-base-v0.3.1) - 2025-10-30
+
+### Other
+
+- fix clippy issue
+- add license documents to any crate
+- removed unused dependencies
+
 ## [0.3.0](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.2.10...mxl-base-v0.3.0) - 2025-10-23
 
 ### Other
