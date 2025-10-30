@@ -10,7 +10,9 @@ pub fn init() -> anyhow::Result<()> {
     relm4::adw::init()?;
     #[cfg(feature = "third_party_licenses_dialog")]
     {
-        relm4_icons::initialize_icons();
+        use third_party_licenses_dialog::icon_names;
+
+        relm4_icons::initialize_icons(icon_names::GRESOURCE_BYTES, icon_names::RESOURCE_PREFIX);
     }
     Ok(())
 }

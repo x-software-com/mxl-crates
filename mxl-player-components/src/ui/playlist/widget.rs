@@ -1,8 +1,8 @@
+use crate::icon_names;
 use anyhow::Result;
 use gst_pbutils::DiscovererInfo;
 use log::*;
 use mxl_relm4_components::relm4::{self, actions::*, adw::prelude::*, factory::FactoryVecDeque, gtk::glib, prelude::*};
-use relm4_icons::icon_names;
 
 use glib::clone;
 

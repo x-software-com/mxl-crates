@@ -15,8 +15,8 @@ rust-version.workspace = true
 anyhow.workspace = true
 log.workspace = true
 relm4-icons = { workspace = true, optional = true }
-relm4 = { version = "0.9", features = ["macros", "libadwaita", "gnome_44"] }
-relm4-components = "0.9"
+relm4 = { version = "0.10", features = ["macros", "libadwaita", "gnome_44"] }
+relm4-components = "0.10"
 sancus = { version = "0.1", optional = true }
 
 # Internationalization:
@@ -25,7 +25,10 @@ rust-embed.workspace = true
 i18n-embed.workspace = true
 
 [features]
-third_party_licenses_dialog = ["dep:sancus", "relm4-icons/all"]
+third_party_licenses_dialog = ["dep:sancus", "relm4-icons"]
+
+[build-dependencies]
+relm4-icons-build.workspace = true
 
 [package.metadata.cargo-machete]
-ignored = ["sancus"]
+ignored = ["relm4-icons-build"]

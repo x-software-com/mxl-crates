@@ -18,14 +18,6 @@ fn main() {
         // Directory with custom icons (if any)
         None::<&str>,
         // List of icons to include
-        [
-            "play-large",
-            "cross-small",
-            "plus",
-            "warning-outline",
-            "arrow-repeat-all-off-filled",
-            "arrow-repeat-all-filled",
-            "video-clip-multiple-regular",
-        ],
+        ["left-large", "right-large"],
     );
 }

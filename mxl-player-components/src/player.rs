@@ -133,42 +133,42 @@ impl PlayerBuilder {
                 glib::ControlFlow::Break,
                 move |_, message| {
                     match PlayMessage::parse(message) {
-                        Ok(PlayMessage::EndOfStream) => {
+                        Ok(PlayMessage::EndOfStream(_msg)) => {
                             if let Some(uri) = gst_play.uri() {
                                 let player_data = player_data.lock().unwrap();
                                 player_data.send(PlayerComponentCommand::EndOfStream(uri.into()));
                             }
                         }
-                        Ok(PlayMessage::MediaInfoUpdated { info }) => {
+                        Ok(PlayMessage::MediaInfoUpdated(msg)) => {
                             let mut player_data_guard = player_data.as_ref().lock();
                             let player_data = player_data_guard.as_mut().unwrap();
-                            player_data.send(PlayerComponentCommand::MediaInfoUpdated(info));
+                            player_data.send(PlayerComponentCommand::MediaInfoUpdated(msg.media_info().to_owned()));
                         }
-                        Ok(PlayMessage::DurationChanged { duration }) => {
+                        Ok(PlayMessage::DurationChanged(msg)) => {
                             let player_data = player_data.lock().unwrap();
-                            if let Some(duration) = duration {
+                            if let Some(duration) = msg.duration() {
                                 player_data.send(PlayerComponentCommand::DurationChanged(
                                     duration.mseconds() as f64 / 1000_f64,
                                 ));
                             }
                         }
-                        Ok(PlayMessage::PositionUpdated { position }) => {
+                        Ok(PlayMessage::PositionUpdated(msg)) => {
                             let player_data = player_data.lock().unwrap();
-                            if let Some(position) = position {
+                            if let Some(position) = msg.position() {
                                 player_data.send(PlayerComponentCommand::PositionUpdated(
                                     position.mseconds() as f64 / 1000_f64,
                                 ));
                             }
                         }
-                        Ok(PlayMessage::VideoDimensionsChanged { width, height }) => {
+                        Ok(PlayMessage::VideoDimensionsChanged(msg)) => {
                             let player_data = player_data.lock().unwrap();
                             player_data.send(PlayerComponentCommand::VideoDimensionsChanged(
-                                width as i32,
-                                height as i32,
+                                msg.width() as i32,
+                                msg.height() as i32,
                             ));
                         }
-                        Ok(PlayMessage::StateChanged { state }) => {
-                            let state = match state {
+                        Ok(PlayMessage::StateChanged(msg)) => {
+                            let state = match msg.state() {
                                 gst_play::PlayState::Playing => Some(PlaybackState::Playing),
                                 gst_play::PlayState::Paused => Some(PlaybackState::Paused),
                                 gst_play::PlayState::Stopped => Some(PlaybackState::Stopped),
@@ -180,22 +180,26 @@ impl PlayerBuilder {
                                 player_data.change_state(s);
                             }
                         }
-                        Ok(PlayMessage::VolumeChanged { volume }) => {
+                        Ok(PlayMessage::VolumeChanged(msg)) => {
                             let player_data = player_data.lock().unwrap();
-                            player_data.send(PlayerComponentCommand::VolumeChanged(volume));
+                            player_data.send(PlayerComponentCommand::VolumeChanged(msg.volume()));
                         }
-                        Ok(PlayMessage::Error { error, .. }) => {
+                        Ok(PlayMessage::Error(msg)) => {
                             let mut player_data = player_data.lock().unwrap();
                             player_data.change_state(PlaybackState::Error);
-                            player_data.send(PlayerComponentCommand::Error(anyhow::anyhow!(error)));
+                            player_data.send(PlayerComponentCommand::Error(anyhow::Error::from(
+                                msg.error().to_owned(),
+                            )));
                         }
-                        Ok(PlayMessage::SeekDone) => {
+                        Ok(PlayMessage::SeekDone(_msg)) => {
                             let player_data = player_data.lock().unwrap();
                             player_data.send(PlayerComponentCommand::SeekDone);
                         }
-                        Ok(PlayMessage::Warning { error, .. }) => {
+                        Ok(PlayMessage::Warning(msg)) => {
                             let player_data = player_data.lock().unwrap();
-                            player_data.send(PlayerComponentCommand::Warning(anyhow::anyhow!(error)));
+                            player_data.send(PlayerComponentCommand::Warning(anyhow::Error::from(
+                                msg.error().to_owned(),
+                            )));
                         }
                         _ => (),
                     }
@@ -361,6 +365,7 @@ impl Player {
                 self.player.set_audio_track_enabled(true);
                 self.player
                     .set_audio_track(index)
+                    // .set_audio_track_id() <-- !!! TODO(mw): must be used!
                     .with_context(|| "Cannot set audio stream")?
             }
         }

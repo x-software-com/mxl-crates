@@ -14,8 +14,10 @@ pub fn init(project_data_dir: PathBuf) {
 
 #[cfg(any(feature = "create_report_dialog", feature = "problem_report_dialog"))]
 pub fn init_gui() -> anyhow::Result<()> {
+    use crate::icon_names;
+
     mxl_relm4_components::init()?;
-    relm4_icons::initialize_icons();
+    relm4_icons::initialize_icons(icon_names::GRESOURCE_BYTES, icon_names::RESOURCE_PREFIX);
     Ok(())
 }
 

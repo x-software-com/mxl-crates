@@ -1,4 +1,8 @@
+#[cfg(any(feature = "create_report_dialog", feature = "problem_report_dialog"))]
+mod icon_names;
+
 mod localization;
+
 pub mod misc;
 pub mod proc_dir;
 

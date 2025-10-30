@@ -2,7 +2,7 @@ use super::{
     messages::{CreateReportDialogInput, CreateReportDialogOutput, internal::PrivateMsg},
     model::{CreateReportDialog, CreateReportDialogInit},
 };
-use crate::localization::helper::fl;
+use crate::{icon_names, localization::helper::fl};
 use mxl_relm4_components::{
     relm4::{
         self, Component, ComponentParts, ComponentSender,
@@ -12,7 +12,6 @@ use mxl_relm4_components::{
     },
     relm4_components::save_dialog::{SaveDialog, SaveDialogMsg, SaveDialogResponse, SaveDialogSettings},
 };
-use relm4_icons::icon_names;
 
 macro_rules! report_subject_fmt {
     () => {

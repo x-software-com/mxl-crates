@@ -16,26 +16,26 @@ log.workspace = true
 const_format.workspace = true
 mxl-relm4-components.workspace = true
 chrono.workspace = true
-relm4-icons = { workspace = true, features = ["all"] }
+relm4-icons.workspace = true
 # threadpool = "1"
 rusty_pool = "0.7"
 termtree = "0.5"
 notify = "8"
 notify-debouncer-full = "0.6"
-gst = { package = "gstreamer", version = "0.23", features = ["v1_24"] }
-gst-pbutils = { package = "gstreamer-pbutils", version = "0.23", features = [
-    "v1_24",
+gst = { package = "gstreamer", version = "0.24", features = ["v1_26"] }
+gst-pbutils = { package = "gstreamer-pbutils", version = "0.24", features = [
+    "v1_26",
 ] }
-gst-play = { package = "gstreamer-play", version = "0.23", features = [
-    "v1_24",
+gst-play = { package = "gstreamer-play", version = "0.24", features = [
+    "v1_26",
 ] }
-gst-video = { package = "gstreamer-video", version = "0.23", features = [
-    "v1_24",
+gst-video = { package = "gstreamer-video", version = "0.24", features = [
+    "v1_26",
 ] }
-gst-tag = { package = "gstreamer-tag", version = "0.23", features = ["v1_24"] }
+gst-tag = { package = "gstreamer-tag", version = "0.24", features = ["v1_26"] }
 
-# Force crate to version 0.13.1, becuse 0.13.3 is broken, when executing: cargo check --no-default-features --features dmabuf
-gst-plugin-gtk4 = { version = "=0.13.6", features = ["gtk_v4_14"] }
+# Note: version 0.13.1 was good, version 0.13.3 is broken, when executing: cargo check --no-default-features --features dmabuf
+gst-plugin-gtk4 = { version = "0.14", features = ["gtk_v4_14"] }
 
 
 # Internationalization:
@@ -53,5 +53,8 @@ dmabuf = ["gst-plugin-gtk4/dmabuf"]
 tempfile.workspace = true
 env_logger = "0.11"
 
+[build-dependencies]
+relm4-icons-build.workspace = true
+
 [package.metadata.cargo-machete]
-ignored = ["gst-plugin-gtk4"]
+ignored = ["relm4-icons-build"]

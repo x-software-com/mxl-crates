@@ -1,5 +1,5 @@
+use super::icon_names;
 use relm4::{adw::prelude::*, factory::FactoryVecDeque, prelude::*};
-use relm4_icons::icon_names;
 use sancus_lib::third_party_licenses::ThirdPartyLibrary;
 
 use super::{
@@ -68,7 +68,7 @@ impl Component for ThirdPartyLicensesComponentModel {
                             set_visible: model.show_placeholder,
                             set_hexpand: true,
                             set_vexpand: true,
-                            set_icon_name: Some(icon_names::WARNING),
+                            set_icon_name: Some(icon_names::WARNING_OUTLINE),
                             set_title: &fl!("third-party-licenses", "not-found"),
                             set_description: Some(&fl!("third-party-licenses", "not-found-desc")),
                         }

@@ -1,4 +1,4 @@
-use crate::gst_helpers;
+use crate::{gst_helpers, icon_names};
 use anyhow::Result;
 use std::path::Path;
 
@@ -7,6 +7,7 @@ pub const ENV_NAME_GST_DEBUG_DUMP_DOT_DIR: &str = "GST_DEBUG_DUMP_DOT_DIR";
 pub fn init(gst_debug_dump_dot_dir: &Path, cache_dir: &Path) -> Result<()> {
     crate::localization::init();
     mxl_relm4_components::init()?;
+    relm4_icons::initialize_icons(icon_names::GRESOURCE_BYTES, icon_names::RESOURCE_PREFIX);
 
     unsafe { std::env::set_var(ENV_NAME_GST_DEBUG_DUMP_DOT_DIR, gst_debug_dump_dot_dir) };
     gst_helpers::init(cache_dir);

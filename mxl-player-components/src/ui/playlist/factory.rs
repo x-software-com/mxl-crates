@@ -1,3 +1,4 @@
+use crate::icon_names;
 use anyhow::{Context, Error, Result};
 use chrono::DateTime;
 use gst::TagList;
@@ -10,7 +11,6 @@ use mxl_relm4_components::relm4::{
     prelude::*,
 };
 use notify_debouncer_full::{DebounceEventResult, Debouncer, RecommendedCache, new_debouncer, notify::*};
-use relm4_icons::icon_names;
 use std::path::{Path, PathBuf};
 
 use glib::clone;
@@ -162,7 +162,7 @@ impl FactoryComponent for PlaylistEntryModel {
                         gtk::Button {
                             set_margin_all: 0,
                             set_valign: gtk::Align::Center,
-                            set_icon_name: icon_names::WARNING,
+                            set_icon_name: icon_names::WARNING_OUTLINE,
                             set_tooltip_text: Some(fl!("retry-fetch-metadata").as_str()),
                             set_use_underline: true,
                             add_css_class: "flat",
@@ -257,7 +257,7 @@ impl FactoryComponent for PlaylistEntryModel {
                         set_transition_type: gtk::RevealerTransitionType::SlideLeft,
 
                         gtk::Button {
-                            set_icon_name: icon_names::SMALL_X,
+                            set_icon_name: icon_names::CROSS_SMALL,
                             set_tooltip_text: Some(&fl!("remove-file", "desc")),
                             add_css_class: "destructive-action",
                             set_valign: gtk::Align::Center,
