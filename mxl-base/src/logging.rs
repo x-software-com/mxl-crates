@@ -32,20 +32,11 @@ pub fn current_log_file() -> &'static PathBuf {
     CURRENT_LOG_FILE_HOLDER.get().expect("init() must be called first")
 }
 
+#[derive(Default)]
 pub struct Builder {
     level_for: HashMap<&'static str, log::LevelFilter>,
     console_level_for: HashMap<&'static str, log::LevelFilter>,
     without_stderr: bool,
-}
-
-impl Default for Builder {
-    fn default() -> Self {
-        Self {
-            level_for: HashMap::new(),
-            console_level_for: HashMap::new(),
-            without_stderr: false,
-        }
-    }
 }
 
 impl Builder {
