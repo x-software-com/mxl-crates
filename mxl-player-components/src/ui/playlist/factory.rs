@@ -9,7 +9,7 @@ use mxl_relm4_components::relm4::{
     gtk::{glib, pango, prelude::*},
     prelude::*,
 };
-use notify_debouncer_mini::{DebounceEventResult, Debouncer, new_debouncer, notify::*};
+use notify_debouncer_full::{DebounceEventResult, Debouncer, RecommendedCache, new_debouncer, notify::*};
 use relm4_icons::icon_names;
 use std::path::{Path, PathBuf};
 
@@ -59,7 +59,7 @@ pub struct PlaylistEntryModel {
     pub next_uuid: Option<String>,
     pub recorder_machine_id: Option<String>,
     pub media_info: Option<DiscovererInfo>,
-    pub notify_debouncer: Option<Debouncer<RecommendedWatcher>>,
+    pub notify_debouncer: Option<Debouncer<RecommendedWatcher, RecommendedCache>>,
 }
 
 #[derive(Debug, Clone)]
@@ -638,22 +638,27 @@ impl PlaylistEntryModel {
         self.media_info = Some(info);
     }
 
-    fn init_file_watcher(uri_str: &str, sender: FactorySender<Self>) -> Result<Debouncer<RecommendedWatcher>> {
+    fn init_file_watcher(
+        uri_str: &str,
+        sender: FactorySender<Self>,
+    ) -> Result<Debouncer<RecommendedWatcher, RecommendedCache>> {
         let uri = relm4::gtk::glib::Uri::parse(uri_str, relm4::gtk::glib::UriFlags::PARSE_RELAXED)?;
         let file_path = uri.path().to_string();
-        let mut debouncer: Debouncer<RecommendedWatcher> = new_debouncer(
+        let mut debouncer = new_debouncer(
             std::time::Duration::from_secs(NOTIFY_TIMEOUT_SECS),
+            None,
             move |res: DebounceEventResult| match res {
                 Ok(events) => events.iter().for_each(|e| {
-                    debug!("File {:?} changed, updating metadata", e.path);
-                    sender.input(PlaylistEntryInput::FetchMetadata);
+                    let fetch_metadata = e.kind.is_modify() || e.kind.is_remove() || e.kind.is_create();
+                    debug!("{e:?} fetch_metadata={fetch_metadata}");
+                    if fetch_metadata {
+                        sender.input(PlaylistEntryInput::FetchMetadata);
+                    }
                 }),
                 Err(error) => error!("Error {error:?}"),
             },
         )?;
-        debouncer
-            .watcher()
-            .watch(Path::new(&file_path), RecursiveMode::NonRecursive)?;
+        debouncer.watch(Path::new(&file_path), RecursiveMode::NonRecursive)?;
 
         Ok(debouncer)
     }
