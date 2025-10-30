@@ -22,17 +22,17 @@ rusty_pool = "0.7"
 termtree = "0.5"
 notify = "8"
 notify-debouncer-full = "0.6"
-gst = { package = "gstreamer", version = "0.24", features = ["v1_26"] }
+gst = { package = "gstreamer", version = "0.24", features = ["v1_24"] }
 gst-pbutils = { package = "gstreamer-pbutils", version = "0.24", features = [
-    "v1_26",
+    "v1_24",
 ] }
 gst-play = { package = "gstreamer-play", version = "0.24", features = [
-    "v1_26",
+    "v1_24",
 ] }
 gst-video = { package = "gstreamer-video", version = "0.24", features = [
-    "v1_26",
+    "v1_24",
 ] }
-gst-tag = { package = "gstreamer-tag", version = "0.24", features = ["v1_26"] }
+gst-tag = { package = "gstreamer-tag", version = "0.24", features = ["v1_24"] }
 
 # Note: version 0.13.1 was good, version 0.13.3 is broken, when executing: cargo check --no-default-features --features dmabuf
 gst-plugin-gtk4 = { version = "0.14", features = ["gtk_v4_14"] }
