@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.3](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.2...mxl-investigator-v0.2.3) - 2025-10-30
+
+### Added
+
+- upgrade dependencies relm4 and gstreamer
+
+### Other
+
+- add license documents to any crate
+
 ## [0.2.2](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.1...mxl-investigator-v0.2.2) - 2025-10-23
 
 ### Other
