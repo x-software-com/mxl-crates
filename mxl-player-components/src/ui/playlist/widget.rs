@@ -288,10 +288,10 @@ impl Component for PlaylistComponentModel {
             }
             PlaylistComponentInput::Remove(index) => {
                 debug!("Remove item {index:?}");
-                if let Some(current_index) = self.index.clone() {
-                    if index == current_index {
-                        self.next(&sender);
-                    }
+                if let Some(current_index) = self.index.clone()
+                    && index == current_index
+                {
+                    self.next(&sender);
                 }
                 self.uris.guard().remove(index.current_index());
                 sender

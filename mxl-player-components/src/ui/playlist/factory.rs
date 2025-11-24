@@ -414,31 +414,30 @@ impl FactoryComponent for PlaylistEntryModel {
                 false,
                 move |_drop_target, value, _x, y| {
                     sender.input(PlaylistEntryInput::SetDropState(DropState::None));
-                    if let Ok(other_index) = value.get::<glib::BoxedAnyObject>() {
-                        if let Ok(other_index) = other_index.try_borrow::<DynamicIndex>() {
-                            if own_index.current_index() != other_index.current_index() {
-                                let to = if y > self_widget.height() as f64 / 2.0 {
-                                    // move after own_index
-                                    if own_index.current_index() > other_index.current_index() {
-                                        own_index.current_index()
-                                    } else {
-                                        own_index.current_index() + 1
-                                    }
-                                } else {
-                                    // move before own_index
-                                    if own_index.current_index() > other_index.current_index() {
-                                        own_index.current_index() - 1
-                                    } else {
-                                        own_index.current_index()
-                                    }
-                                };
-
-                                sender
-                                    .output(PlaylistEntryOutput::Move(other_index.clone(), to))
-                                    .unwrap_or_default();
-                                return true;
+                    if let Ok(other_index) = value.get::<glib::BoxedAnyObject>()
+                        && let Ok(other_index) = other_index.try_borrow::<DynamicIndex>()
+                        && own_index.current_index() != other_index.current_index()
+                    {
+                        let to = if y > self_widget.height() as f64 / 2.0 {
+                            // move after own_index
+                            if own_index.current_index() > other_index.current_index() {
+                                own_index.current_index()
+                            } else {
+                                own_index.current_index() + 1
                             }
-                        }
+                        } else {
+                            // move before own_index
+                            if own_index.current_index() > other_index.current_index() {
+                                own_index.current_index() - 1
+                            } else {
+                                own_index.current_index()
+                            }
+                        };
+
+                        sender
+                            .output(PlaylistEntryOutput::Move(other_index.clone(), to))
+                            .unwrap_or_default();
+                        return true;
                     }
                     false
                 }
@@ -592,24 +591,23 @@ impl PlaylistEntryModel {
                     self.duration = Some(duration.mseconds() as f64 / 1000_f64);
                     self.duration_text = format!("<span font_desc=\"monospace\">{duration:.0}</span>");
                 }
-                if let Some(info) = info.stream_info() {
-                    if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
-                        if let Some(tags) = info.tags() {
-                            if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
-                                match date_time.get().to_iso8601_string() {
-                                    Ok(iso_string) => match iso_string.parse::<DateTime<chrono::Local>>() {
-                                        Ok(chrono_time) => {
-                                            self.info_text = chrono_time.to_rfc2822();
-                                            self.date_time = Some(chrono_time);
-                                        }
-                                        Err(_) => self.info_text = format!("{}", date_time.get()),
-                                    },
-                                    Err(_) => self.info_text = format!("{}", date_time.get()),
+                if let Some(info) = info.stream_info()
+                    && let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>()
+                    && let Some(tags) = info.tags()
+                {
+                    if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
+                        match date_time.get().to_iso8601_string() {
+                            Ok(iso_string) => match iso_string.parse::<DateTime<chrono::Local>>() {
+                                Ok(chrono_time) => {
+                                    self.info_text = chrono_time.to_rfc2822();
+                                    self.date_time = Some(chrono_time);
                                 }
-                            } else {
-                                "".clone_into(&mut self.info_text);
-                            }
+                                Err(_) => self.info_text = format!("{}", date_time.get()),
+                            },
+                            Err(_) => self.info_text = format!("{}", date_time.get()),
                         }
+                    } else {
+                        "".clone_into(&mut self.info_text);
                     }
                 }
                 self.current_uuid = media_info_get_global_tag(TAG_CURRENT_UUID, &info);
@@ -666,12 +664,11 @@ impl PlaylistEntryModel {
 
 fn media_info_get_global_tag(name: &str, info: &DiscovererInfo) -> Option<String> {
     if info.result() == DiscovererResult::Ok {
-        if let Some(info) = info.stream_info() {
-            if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
-                if let Some(tag) = find_tag_in_tag_list(name, info.tags().as_ref()) {
-                    return Some(tag);
-                }
-            }
+        if let Some(info) = info.stream_info()
+            && let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>()
+            && let Some(tag) = find_tag_in_tag_list(name, info.tags().as_ref())
+        {
+            return Some(tag);
         }
         for stream in info.container_streams() {
             if let Some(tag) = find_tag_in_tag_list(name, stream.tags().as_ref()) {
@@ -741,15 +738,15 @@ fn trace_media_info(info: &DiscovererInfo) {
                 }
                 tree.push(sub_tree);
             }
-            if let Some(info) = info.stream_info() {
-                if let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>() {
-                    let mut sub_tree = termtree::Tree::new(format!("Stream #{}", info.stream_number()));
-                    sub_tree.push(termtree::Tree::new(format!("type: {}", info.stream_type_nick())));
-                    if let Some(tags) = info.tags() {
-                        sub_tree.push(trace_media_info_tags(&tags));
-                    }
-                    tree.push(sub_tree);
+            if let Some(info) = info.stream_info()
+                && let Some(info) = info.downcast_ref::<gst_pbutils::DiscovererContainerInfo>()
+            {
+                let mut sub_tree = termtree::Tree::new(format!("Stream #{}", info.stream_number()));
+                sub_tree.push(termtree::Tree::new(format!("type: {}", info.stream_type_nick())));
+                if let Some(tags) = info.tags() {
+                    sub_tree.push(trace_media_info_tags(&tags));
                 }
+                tree.push(sub_tree);
             }
             for stream in info.container_streams() {
                 let mut sub_tree = termtree::Tree::new(format!("Stream #{}", stream.stream_number()));
@@ -836,12 +833,11 @@ fn trace_media_info_tags(tags: &TagList) -> termtree::Tree<String> {
 
     for (name, values) in tags.iter_generic() {
         if name == gst::tags::DateTime::TAG_NAME {
-            if let Some(date_time) = tags.get::<gst::tags::DateTime>() {
-                if let Ok(iso_date_time) = date_time.get().to_iso8601_string() {
-                    if let Ok(date_time) = iso_date_time.parse::<DateTime<chrono::Local>>() {
-                        tree.push(termtree::Tree::new(format!("{}: {}", name, date_time.to_rfc2822())));
-                    }
-                }
+            if let Some(date_time) = tags.get::<gst::tags::DateTime>()
+                && let Ok(iso_date_time) = date_time.get().to_iso8601_string()
+                && let Ok(date_time) = iso_date_time.parse::<DateTime<chrono::Local>>()
+            {
+                tree.push(termtree::Tree::new(format!("{}: {}", name, date_time.to_rfc2822())));
             }
         } else {
             for value in values {

@@ -102,11 +102,11 @@ impl PlaylistComponentModel {
 
                 sender.emit(PlaylistComponentInput::Add(files));
                 return true;
-            } else if let Ok(file) = value.get::<gtk::gio::File>() {
-                if let Some(file) = file.path() {
-                    sender.emit(PlaylistComponentInput::Add(vec![file]));
-                    return true;
-                }
+            } else if let Ok(file) = value.get::<gtk::gio::File>()
+                && let Some(file) = file.path()
+            {
+                sender.emit(PlaylistComponentInput::Add(vec![file]));
+                return true;
             }
             false
         });
@@ -229,13 +229,13 @@ impl PlaylistComponentModel {
 
     pub(super) fn previous(&mut self, sender: &ComponentSender<Self>) {
         if let Some(index) = self.index.as_ref() {
-            if let Some(i) = index.current_index().checked_sub(1) {
-                if let Some(entry) = self.uris.guard().get(i) {
-                    // Switch to previous file:
-                    debug!("Playlist previous -> switch to index {i}");
-                    sender.input(PlaylistComponentInput::Switch(entry.index.clone()));
-                    return;
-                }
+            if let Some(i) = index.current_index().checked_sub(1)
+                && let Some(entry) = self.uris.guard().get(i)
+            {
+                // Switch to previous file:
+                debug!("Playlist previous -> switch to index {i}");
+                sender.input(PlaylistComponentInput::Switch(entry.index.clone()));
+                return;
             }
             if let Some(entry) = self.uris.guard().get(index.current_index()) {
                 // Restart playback of current first file in playlist:
@@ -247,13 +247,13 @@ impl PlaylistComponentModel {
 
     pub(super) fn next(&mut self, sender: &ComponentSender<Self>) {
         if let Some(current_index) = self.index.as_ref() {
-            if let Some(i) = current_index.current_index().checked_add(1) {
-                if let Some(entry) = self.uris.guard().get(i) {
-                    // Switch to next file:
-                    debug!("Playlist next -> switch to index {i}");
-                    sender.input(PlaylistComponentInput::Switch(entry.index.clone()));
-                    return;
-                }
+            if let Some(i) = current_index.current_index().checked_add(1)
+                && let Some(entry) = self.uris.guard().get(i)
+            {
+                // Switch to next file:
+                debug!("Playlist next -> switch to index {i}");
+                sender.input(PlaylistComponentInput::Switch(entry.index.clone()));
+                return;
             }
             match self.repeat {
                 RepeatMode::Off => (),

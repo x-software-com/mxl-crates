@@ -159,11 +159,11 @@ impl Component for PlayerComponentModel {
                     let mut view_data = view_data.lock().unwrap();
                     if view_data.video_view.drawing_area.is_none() {
                         view_data.video_view.drawing_area = Some(VideoRectangle::new(0, 0, w, h));
-                    } else if let Some(drawing_area) = &mut view_data.video_view.drawing_area {
-                        if drawing_area.w != w || drawing_area.h != h {
-                            drawing_area.w = w;
-                            drawing_area.h = h;
-                        }
+                    } else if let Some(drawing_area) = &mut view_data.video_view.drawing_area
+                        && (drawing_area.w != w || drawing_area.h != h)
+                    {
+                        drawing_area.w = w;
+                        drawing_area.h = h;
                     }
                     view_data
                         .video_view
