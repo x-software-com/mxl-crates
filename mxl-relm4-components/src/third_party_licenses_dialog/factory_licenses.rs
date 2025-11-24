@@ -22,7 +22,7 @@ impl FactoryComponent for ThirdPartyLicenseTextModel {
 
     view! {
         #[root]
-        root = gtk::ScrolledWindow {
+        gtk::ScrolledWindow {
             set_hexpand: true,
             set_vexpand: true,
 
