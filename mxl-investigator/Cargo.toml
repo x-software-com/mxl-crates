@@ -45,6 +45,7 @@ problem_report_dialog = [
     "dep:mxl-relm4-components",
     "dep:relm4-icons",
     "dep:urlencoding",
+    "dep:open",
 ]
 sysinfo = ["dep:sysinfo"]
 
