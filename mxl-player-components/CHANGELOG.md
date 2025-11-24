@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.11](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.10...mxl-player-components-v0.1.11) - 2025-11-24
+
+### Other
+
+- fix clippy issues
+
 ## [0.1.10](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.9...mxl-player-components-v0.1.10) - 2025-10-30
 
 ### Added
