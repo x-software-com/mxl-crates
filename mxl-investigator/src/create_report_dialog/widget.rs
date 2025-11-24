@@ -59,7 +59,10 @@ impl Component for CreateReportDialog {
             gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
 
-                adw::HeaderBar {},
+                adw::HeaderBar {
+                    #[watch]
+                    set_show_end_title_buttons: !model.processing,
+                },
 
                 gtk::Box {
                     set_orientation: gtk::Orientation::Vertical,
@@ -194,10 +197,13 @@ impl Component for CreateReportDialog {
                         SaveDialogResponse::Cancel => CreateReportDialogInput::PrivateMessage(PrivateMsg::NoOperation),
                     })
             },
+            processing: false,
         };
 
         let widgets = view_output!();
-        mxl_relm4_components::gtk::do_close_on_escape(root.upcast_ref::<gtk::Window>());
+        mxl_relm4_components::gtk::do_closure_on_escape(&root, move || {
+            sender.input(CreateReportDialogInput::PrivateMessage(PrivateMsg::EscapePressed))
+        });
 
         ComponentParts { model, widgets }
     }
@@ -212,21 +218,41 @@ impl Component for CreateReportDialog {
         match msg {
             CreateReportDialogInput::PrivateMessage(msg) => match msg {
                 PrivateMsg::NoOperation => {}
+                PrivateMsg::EscapePressed => {
+                    if self.processing {
+                        return; // do nothing
+                    }
+                    if widgets
+                        .stack_view
+                        .visible_child()
+                        .is_some_and(|child| child == widgets.error_page)
+                    {
+                        sender.input(CreateReportDialogInput::PrivateMessage(
+                            PrivateMsg::ShowBackwardToStartPage,
+                        ));
+                    } else {
+                        root.close();
+                    }
+                }
                 PrivateMsg::SwitchForwardTo(to_page) => {
                     widgets
                         .stack_view
                         .set_transition_type(gtk::StackTransitionType::SlideLeft);
                     widgets.stack_view.set_visible_child(&to_page);
                 }
+                PrivateMsg::SwitchBackwardTo(to_page) => {
+                    widgets
+                        .stack_view
+                        .set_transition_type(gtk::StackTransitionType::SlideRight);
+                    widgets.stack_view.set_visible_child(&to_page);
+                }
+                PrivateMsg::ShowBackwardToStartPage => {
+                    sender.input(CreateReportDialogInput::PrivateMessage(PrivateMsg::SwitchBackwardTo(
+                        widgets.start_page.clone().into(),
+                    )));
+                }
                 PrivateMsg::OpenFileChooser => {
                     self.file_chooser.emit(SaveDialogMsg::SaveAs(self.file_name.clone()));
-                }
-                PrivateMsg::CreateReport(path) => {
-                    self.file_name = path.to_string_lossy().to_string();
-                    widgets.stack_view.set_transition_type(gtk::StackTransitionType::None);
-                    widgets.stack_view.set_visible_child(&widgets.progress_page);
-                    sender.spawn_oneshot_command(move || crate::proc_dir::archive_and_remove_panics(&path));
-                    self.update_view(widgets, sender);
                 }
                 PrivateMsg::OpenDirectory => {
                     let mut dir = std::path::PathBuf::from(&self.file_name);
@@ -234,6 +260,14 @@ impl Component for CreateReportDialog {
                     if let Err(error) = open::that(&dir) {
                         log::warn!("Cannot open directory {}: {:?}", dir.to_string_lossy(), error);
                     }
+                }
+                PrivateMsg::CreateReport(path) => {
+                    self.file_name = path.to_string_lossy().to_string();
+                    widgets.stack_view.set_transition_type(gtk::StackTransitionType::None);
+                    widgets.stack_view.set_visible_child(&widgets.progress_page);
+                    self.processing = true;
+                    sender.spawn_oneshot_command(move || crate::proc_dir::archive_and_remove_panics(&path));
+                    self.update_view(widgets, sender);
                 }
             },
             CreateReportDialogInput::Present(transient_for) => {
@@ -267,5 +301,7 @@ impl Component for CreateReportDialog {
                 widgets.success_page.clone().into(),
             )));
         }
+        self.processing = false;
+        self.update_view(widgets, sender);
     }
 }

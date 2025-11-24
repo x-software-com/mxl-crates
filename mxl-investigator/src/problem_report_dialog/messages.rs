@@ -7,13 +7,14 @@ pub(super) mod internal {
     #[derive(Debug)]
     pub enum PrivateMsg {
         NoOperation,
+        EscapePressed,
         SwitchForwardTo(gtk::Widget),
         SwitchBackwardTo(gtk::Widget),
         ShowBackwardToStartPage,
         OpenFileChooser,
+        OpenDirectory,
         CreateReport(PathBuf),
         MoveToTrash,
-        EscapePressed,
     }
 }
 

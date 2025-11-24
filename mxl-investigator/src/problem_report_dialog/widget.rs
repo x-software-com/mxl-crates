@@ -45,7 +45,7 @@ impl Component for ProblemReportDialog {
     type Init = ProblemReportDialogInit;
     type Input = ProblemReportDialogInput;
     type Output = ProblemReportDialogOutput;
-    type CommandOutput = ();
+    type CommandOutput = anyhow::Result<()>;
 
     view! {
         adw::Window {
@@ -59,7 +59,10 @@ impl Component for ProblemReportDialog {
             gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
 
-                adw::HeaderBar {},
+                adw::HeaderBar {
+                    #[watch]
+                    set_show_end_title_buttons: !model.processing,
+                },
 
                 gtk::Box {
                     set_orientation: gtk::Orientation::Vertical,
@@ -99,12 +102,44 @@ impl Component for ProblemReportDialog {
                             },
                         },
 
+                        #[name(progress_page)]
+                        gtk::Box {
+                            set_orientation: gtk::Orientation::Horizontal,
+                            set_spacing: 8,
+                            set_halign: gtk::Align::Center,
+
+                            gtk::Spinner {
+                                #[watch]
+                                set_spinning: true,
+                                set_size_request: (32, 32),
+                            },
+                            gtk::Label {
+                                add_css_class: "title-2",
+                                set_label: &&fl!("problem-report-dialog", "progress-description"),
+                            },
+                        },
+
                         #[name(success_page)]
                         adw::StatusPage {
                             set_title: &fl!("problem-report-dialog", "success-title"),
                             add_css_class: "success",
                             #[watch]
                             set_description: Some(&fl!("problem-report-dialog", "success-description", file_name = model.file_name.clone(), support_mail = create_report_email_link(model.app_name))),
+
+                            gtk::Box {
+                                set_hexpand: true,
+                                set_orientation: gtk::Orientation::Vertical,
+                                set_spacing: 8,
+
+                                adw::PreferencesGroup {
+                                    adw::ActionRow {
+                                        set_title: &fl!("problem-report-dialog", "btn-open-directory"),
+                                        set_activatable: true,
+                                        // add_suffix = &gtk::Image::from_icon_name(icon_names::FOLDER_OPEN) {},
+                                        connect_activated => ProblemReportDialogInput::PrivateMessage(PrivateMsg::OpenDirectory),
+                                    },
+                                },
+                            },
                         },
 
                         #[name(error_page)]
@@ -168,6 +203,7 @@ impl Component for ProblemReportDialog {
                         SaveDialogResponse::Cancel => ProblemReportDialogInput::PrivateMessage(PrivateMsg::NoOperation),
                     })
             },
+            processing: false,
         };
 
         root.upcast_ref::<gtk::Window>().connect_close_request(glib::clone!(
@@ -197,6 +233,22 @@ impl Component for ProblemReportDialog {
         match msg {
             ProblemReportDialogInput::PrivateMessage(msg) => match msg {
                 PrivateMsg::NoOperation => {}
+                PrivateMsg::EscapePressed => {
+                    if self.processing {
+                        return; // do nothing
+                    }
+                    if widgets
+                        .stack_view
+                        .visible_child()
+                        .is_some_and(|child| child == widgets.error_page)
+                    {
+                        sender.input(ProblemReportDialogInput::PrivateMessage(
+                            PrivateMsg::ShowBackwardToStartPage,
+                        ));
+                    } else {
+                        root.close();
+                    }
+                }
                 PrivateMsg::SwitchForwardTo(to_page) => {
                     widgets
                         .stack_view
@@ -217,23 +269,19 @@ impl Component for ProblemReportDialog {
                 PrivateMsg::OpenFileChooser => {
                     self.file_chooser.emit(SaveDialogMsg::SaveAs(self.file_name.clone()));
                 }
+                PrivateMsg::OpenDirectory => {
+                    let mut dir = std::path::PathBuf::from(&self.file_name);
+                    dir.set_file_name("");
+                    if let Err(error) = open::that(&dir) {
+                        log::warn!("Cannot open directory {}: {:?}", dir.to_string_lossy(), error);
+                    }
+                }
                 PrivateMsg::CreateReport(path) => {
                     self.file_name = path.to_string_lossy().to_string();
-                    if let Err(err) = crate::proc_dir::archive_and_remove_panics(&path) {
-                        widgets
-                            .error_page
-                            .set_title(&fl!("problem-report-dialog", "error-create-title"));
-                        widgets
-                            .error_page
-                            .set_description(Some(glib::markup_escape_text(&format!("{err:?}")).as_str()));
-                        sender.input(ProblemReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
-                            widgets.error_page.clone().into(),
-                        )));
-                    } else {
-                        sender.input(ProblemReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
-                            widgets.success_page.clone().into(),
-                        )));
-                    }
+                    widgets.stack_view.set_transition_type(gtk::StackTransitionType::None);
+                    widgets.stack_view.set_visible_child(&widgets.progress_page);
+                    self.processing = true;
+                    sender.spawn_oneshot_command(move || crate::proc_dir::archive_and_remove_panics(&path));
                     self.update_view(widgets, sender);
                 }
                 PrivateMsg::MoveToTrash => {
@@ -251,19 +299,6 @@ impl Component for ProblemReportDialog {
                         root.close()
                     }
                 }
-                PrivateMsg::EscapePressed => {
-                    if widgets
-                        .stack_view
-                        .visible_child()
-                        .is_some_and(|child| child == widgets.error_page)
-                    {
-                        sender.input(ProblemReportDialogInput::PrivateMessage(
-                            PrivateMsg::ShowBackwardToStartPage,
-                        ));
-                    } else {
-                        root.close();
-                    }
-                }
             },
             ProblemReportDialogInput::Present(transient_for) => {
                 widgets.stack_view.set_transition_type(gtk::StackTransitionType::None);
@@ -275,5 +310,31 @@ impl Component for ProblemReportDialog {
                 root.present();
             }
         }
+    }
+
+    fn update_cmd_with_view(
+        &mut self,
+        widgets: &mut Self::Widgets,
+        message: Self::CommandOutput,
+        sender: ComponentSender<Self>,
+        _root: &Self::Root,
+    ) {
+        if let Err(err) = message {
+            widgets
+                .error_page
+                .set_title(&fl!("problem-report-dialog", "error-create-title"));
+            widgets
+                .error_page
+                .set_description(Some(glib::markup_escape_text(&format!("{err:?}")).as_str()));
+            sender.input(ProblemReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
+                widgets.error_page.clone().into(),
+            )));
+        } else {
+            sender.input(ProblemReportDialogInput::PrivateMessage(PrivateMsg::SwitchForwardTo(
+                widgets.success_page.clone().into(),
+            )));
+        }
+        self.processing = false;
+        self.update_view(widgets, sender);
     }
 }

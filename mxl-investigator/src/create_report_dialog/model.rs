@@ -12,6 +12,7 @@ pub struct CreateReportDialog {
     pub(super) binary_name: &'static str,
     pub(super) file_name: String,
     pub(super) file_chooser: Controller<SaveDialog>,
+    pub(super) processing: bool,
 }
 
 impl CreateReportDialog {}
