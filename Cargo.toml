@@ -5,7 +5,6 @@ members = [
     "mxl-investigator",
     "mxl-relm4-components",
     "mxl-player-components",
-    "mxl-relm4-components",
 ]
 
 [workspace.package]

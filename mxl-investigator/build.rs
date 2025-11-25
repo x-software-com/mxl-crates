@@ -5,10 +5,10 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
     //
-    // Rerun cargo if one of the internationalization files change:
+    // Rebuild if any files in the i18n folder an toml file have changed
     //
+    println!("cargo:rerun-if-changed=i18n");
     println!("cargo:rerun-if-changed=i18n.toml");
-    println!("cargo:rerun-if-changed=i18n/en/mxl_player_components.ftl");
 
     let icons: Vec<&str> = Vec::new();
     #[cfg(feature = "create_report_dialog")]
