@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.10](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.9...mxl-relm4-components-v0.2.10) - 2025-11-25
+
+### Other
+
+- disabled sancus default features
+- improved build.rs files
+
 ## [0.2.9](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.8...mxl-relm4-components-v0.2.9) - 2025-11-24
 
 ### Other
