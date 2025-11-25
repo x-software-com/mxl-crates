@@ -18,14 +18,14 @@ mxl-relm4-components = { workspace = true, optional = true }
 chrono.workspace = true
 tempfile = { workspace = true, optional = true }
 relm4-icons = { workspace = true, optional = true }
-fs4 = "0.13"
-zip = "6"
-walkdir = "2"
-trash = "5"
-urlencoding = { version = "2", default-features = false, optional = true }
-humantime = "2"
-sysinfo = { version = "0.37", optional = true }
-open = { version = "5", optional = true }
+fs4 = "0.13.1"
+zip = "6.0.0"
+walkdir = "2.5.0"
+trash = "5.2.5"
+urlencoding = { version = "2.1.3", default-features = false, optional = true }
+humantime = "2.3.0"
+sysinfo = { version = "0.37.2", optional = true }
+open = { version = "5.3.3", optional = true }
 
 # Internationalization:
 i18n-embed-fl.workspace = true

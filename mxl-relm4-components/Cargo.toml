@@ -15,9 +15,9 @@ rust-version.workspace = true
 anyhow.workspace = true
 log.workspace = true
 relm4-icons = { workspace = true, optional = true }
-relm4 = { version = "0.10", features = ["macros", "libadwaita", "gnome_44"] }
-relm4-components = { version = "0.10", features = ["libadwaita"] }
-sancus = { version = "0.1", default-features = false, optional = true }
+relm4 = { version = "0.10.0", features = ["macros", "libadwaita", "gnome_44"] }
+relm4-components = { version = "0.10.0", features = ["libadwaita"] }
+sancus = { version = "0.1.6", default-features = false, optional = true }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
