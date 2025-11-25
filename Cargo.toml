@@ -31,4 +31,4 @@ i18n-embed = { version = "0.16.0", features = [
     "desktop-requester",
 ] }
 
-mxl-relm4-components = { path = "mxl-relm4-components", version = "0.2.10" }
+mxl-relm4-components = { path = "mxl-relm4-components", version = "0.2.11" }
