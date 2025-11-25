@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.6](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.5...mxl-investigator-v0.2.6) - 2025-11-25
+
+### Other
+
+- update Cargo.toml and build.rs
+- use fully qualified versions in Cargo.toml
+
 ## [0.2.5](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.4...mxl-investigator-v0.2.5) - 2025-11-25
 
 ### Other

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.3.2...mxl-base-v0.3.3) - 2025-11-25
+
+### Other
+
+- use fully qualified versions in Cargo.toml
+
 ## [0.3.2](https://github.com/x-software-com/mxl-crates/compare/mxl-base-v0.3.1...mxl-base-v0.3.2) - 2025-11-25
 
 ### Other

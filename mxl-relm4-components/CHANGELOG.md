@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.11](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.10...mxl-relm4-components-v0.2.11) - 2025-11-25
+
+### Other
+
+- use fully qualified versions in Cargo.toml
+
 ## [0.2.10](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.9...mxl-relm4-components-v0.2.10) - 2025-11-25
 
 ### Other
