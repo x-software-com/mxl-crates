@@ -16,17 +16,20 @@ repository = "https://github.com/x-software-com/mxl-crates"
 description = "This is a component of the X-Software MXL product line."
 
 [workspace.dependencies]
-anyhow = "1.0.100"
-log = "0.4.28"
-const_format = "0.2.35"
-chrono = "0.4.42"
-tempfile = "3.23.0"
-relm4-icons = "0.10.0"
-relm4-icons-build = "0.10.0"
+anyhow = { version = "1.0.100", default-features = false }
+log = { version = "0.4.28", default-features = false }
+const_format = { version = "0.2.35", default-features = false }
+chrono = { version = "0.4.42", default-features = false, features = ["clock"] }
+tempfile = { version = "3.23.0", default-features = false }
+relm4-icons = { version = "0.10.0", default-features = false }
+relm4-icons-build = { version = "0.10.0", default-features = false }
+rust-embed = { version = "8.9.0", default-features = false, features = [
+    "debug-embed",
+] }
+i18n-embed-fl = { version = "0.10.0", default-features = false }
 # Internationalization:
-i18n-embed-fl = { version = "0.10.0" }
-rust-embed = { version = "8.9.0", features = ["debug-embed"] }
-i18n-embed = { version = "0.16.0", features = [
+i18n-embed = { version = "0.16.0", default-features = true, features = [
+    "rust-embed",
     "fluent-system",
     "desktop-requester",
 ] }
