@@ -37,7 +37,7 @@ in
       rustPlatform.bindgenHook
       gcc
       valgrind
-      python3Full
+      python3
       pipx
       just
       meson
