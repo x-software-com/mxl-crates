@@ -23,7 +23,7 @@ relm4 = { version = "0.10.0", default-features = false, features = [
 relm4-components = { version = "0.10.0", default-features = false, features = [
     "libadwaita",
 ] }
-sancus = { version = "0.1.6", default-features = false, optional = true }
+sancus = { version = "0.1.7", default-features = false, optional = true }
 
 # Internationalization:
 i18n-embed-fl.workspace = true
