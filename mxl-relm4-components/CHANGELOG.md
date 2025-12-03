@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.12](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.11...mxl-relm4-components-v0.2.12) - 2025-12-03
+
+### Other
+
+- update dependencies
+- default features of all dependencies disabled
+
 ## [0.2.11](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.10...mxl-relm4-components-v0.2.11) - 2025-11-25
 
 ### Other
