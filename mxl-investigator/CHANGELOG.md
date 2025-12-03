@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.7](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.6...mxl-investigator-v0.2.7) - 2025-12-03
+
+### Other
+
+- default features of all dependencies disabled
+
 ## [0.2.6](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.5...mxl-investigator-v0.2.6) - 2025-11-25
 
 ### Other
