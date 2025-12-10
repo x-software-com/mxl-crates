@@ -3,7 +3,7 @@ use super::{
     model::MessageDialog,
 };
 use crate::localization::helper::fl;
-use mxl_relm4_components::relm4::{self, adw::gtk::prelude::*, prelude::*};
+use mxl_relm4_components::relm4::{self, adw::gtk::prelude::*, css as adw_css, prelude::*};
 
 #[relm4::component(pub)]
 impl Component for MessageDialog {
@@ -70,7 +70,7 @@ impl Component for MessageDialog {
                                 MessageDialogType::Fatal => fl!("quit").to_owned(),
                                 _ =>  fl!("close").to_owned(),
                             }.as_ref(),
-                            add_css_class: "error",
+                            add_css_class: adw_css::ERROR,
                             set_hexpand: true,
                             connect_clicked => MessageDialogInput::PrivateMessage(PrivateMsg::CloseButtonPressed),
                        },

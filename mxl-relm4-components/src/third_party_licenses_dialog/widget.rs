@@ -1,5 +1,5 @@
 use super::icon_names;
-use relm4::{adw::prelude::*, factory::FactoryVecDeque, prelude::*};
+use relm4::{adw::prelude::*, css as adw_css, factory::FactoryVecDeque, prelude::*};
 use sancus_lib::third_party_licenses::ThirdPartyLibrary;
 
 use super::{
@@ -29,7 +29,7 @@ impl Component for ThirdPartyLicensesComponentModel {
             set_content = &gtk::Box {
                 set_orientation: gtk::Orientation::Vertical,
                 append = &adw::HeaderBar {
-                    set_css_classes: &["flat"],
+                    set_css_classes: &[adw_css::FLAT],
                 },
                 append = &gtk::Paned {
                     set_orientation: gtk::Orientation::Horizontal,
@@ -39,7 +39,7 @@ impl Component for ThirdPartyLicensesComponentModel {
                     #[wrap(Some)]
                     set_start_child = &gtk::Box {
                         set_orientation: gtk::Orientation::Horizontal,
-                        add_css_class: "background",
+                        add_css_class: adw_css::BACKGROUND,
                         set_width_request: 300,
                         set_hexpand: true,
                         set_vexpand: true,

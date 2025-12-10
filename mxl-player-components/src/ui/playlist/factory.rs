@@ -5,7 +5,7 @@ use gst::TagList;
 use gst_pbutils::{DiscovererInfo, DiscovererResult, prelude::*};
 use log::*;
 use mxl_relm4_components::relm4::{
-    self,
+    self, css as adw_css,
     factory::FactoryView,
     gtk::{glib, pango, prelude::*},
     prelude::*,
@@ -115,7 +115,7 @@ impl FactoryComponent for PlaylistEntryModel {
                     set_hexpand: true,
                     set_orientation: gtk::Orientation::Horizontal,
                     set_height_request: 8,
-                    set_css_classes: &["spacer"],
+                    set_css_classes: &[adw_css::SPACER],
                 },
 
                 #[name(entry_box)]
@@ -124,7 +124,7 @@ impl FactoryComponent for PlaylistEntryModel {
                     set_hexpand: true,
                     set_spacing: SPACING,
                     set_margin_all: MARGIN,
-                    add_css_class: "activatable",
+                    add_css_class: adw_css::ACTIVATABLE,
 
                     #[name(state_stack)]
                     gtk::Stack {
@@ -165,7 +165,7 @@ impl FactoryComponent for PlaylistEntryModel {
                             set_icon_name: icon_names::WARNING_OUTLINE,
                             set_tooltip_text: Some(fl!("retry-fetch-metadata").as_str()),
                             set_use_underline: true,
-                            add_css_class: "flat",
+                            add_css_class: adw_css::FLAT,
                             connect_clicked => PlaylistEntryInput::FetchMetadata,
                             },
                     },
@@ -187,7 +187,7 @@ impl FactoryComponent for PlaylistEntryModel {
 
                                     #[watch]
                                     set_css_classes: if self.active {
-                                        &["accent"]
+                                        &[adw_css::ACCENT]
                                     } else {
                                         &[]
                                     },
@@ -204,7 +204,7 @@ impl FactoryComponent for PlaylistEntryModel {
 
                                     #[watch]
                                     set_css_classes: if self.active {
-                                        &["accent"]
+                                        &[adw_css::ACCENT]
                                     } else {
                                         &[]
                                     },
@@ -220,7 +220,7 @@ impl FactoryComponent for PlaylistEntryModel {
                             gtk::Label {
                                 #[watch]
                                 set_css_classes: if self.active {
-                                    &["accent"]
+                                    &[adw_css::ACCENT]
                                 } else {
                                     &[]
                                 },
@@ -238,7 +238,7 @@ impl FactoryComponent for PlaylistEntryModel {
 
                             #[watch]
                             set_css_classes: if self.active {
-                                &["accent"]
+                                &[adw_css::ACCENT]
                             } else {
                                 &[]
                             },
@@ -259,7 +259,7 @@ impl FactoryComponent for PlaylistEntryModel {
                         gtk::Button {
                             set_icon_name: icon_names::CROSS_SMALL,
                             set_tooltip_text: Some(&fl!("remove-file", "desc")),
-                            add_css_class: "destructive-action",
+                            add_css_class: adw_css::DESTRUCTIVE_ACTION,
                             set_valign: gtk::Align::Center,
                             connect_clicked[sender, index] => move |_| {
                                     sender.input(PlaylistEntryInput::Remove(index.clone()))
@@ -274,7 +274,7 @@ impl FactoryComponent for PlaylistEntryModel {
                     set_hexpand: true,
                     set_orientation: gtk::Orientation::Horizontal,
                     set_height_request: 8,
-                    set_css_classes: &["spacer"],
+                    set_css_classes: &[adw_css::SPACER],
                 },
             },
         }
@@ -539,15 +539,15 @@ impl FactoryComponent for PlaylistEntryModel {
             }
             PlaylistEntryInput::SetDropState(state) => match state {
                 DropState::None => {
-                    widgets.above.set_css_classes(&["spacer"]);
-                    widgets.below.set_css_classes(&["spacer"]);
+                    widgets.above.set_css_classes(&[adw_css::SPACER]);
+                    widgets.below.set_css_classes(&[adw_css::SPACER]);
                 }
                 DropState::Above => {
                     widgets.above.set_css_classes(&[]);
-                    widgets.below.set_css_classes(&["spacer"]);
+                    widgets.below.set_css_classes(&[adw_css::SPACER]);
                 }
                 DropState::Below => {
-                    widgets.above.set_css_classes(&["spacer"]);
+                    widgets.above.set_css_classes(&[adw_css::SPACER]);
                     widgets.below.set_css_classes(&[]);
                 }
             },

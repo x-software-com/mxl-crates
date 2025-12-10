@@ -7,6 +7,7 @@ use mxl_relm4_components::{
     relm4::{
         self, Component, ComponentParts, ComponentSender,
         adw::{self, prelude::*},
+        css as adw_css,
         gtk::glib,
         prelude::*,
     },
@@ -107,7 +108,7 @@ impl Component for CreateReportDialog {
                                 set_size_request: (32, 32),
                             },
                             gtk::Label {
-                                add_css_class: "title-2",
+                                add_css_class: adw_css::TITLE_2,
                                 set_label: &&fl!("create-report-dialog", "progress-description"),
                             },
                         },
@@ -115,7 +116,7 @@ impl Component for CreateReportDialog {
                         #[name(success_page)]
                         adw::StatusPage {
                             set_title: &fl!("create-report-dialog", "success-title"),
-                            add_css_class: "success",
+                            add_css_class: adw_css::SUCCESS,
                             #[watch]
                             set_description: Some(&fl!("create-report-dialog", "success-description", file_name = model.file_name.clone(), support_mail = create_report_email_link(model.app_name))),
 
@@ -138,7 +139,7 @@ impl Component for CreateReportDialog {
                         #[name(error_page)]
                         adw::StatusPage {
                             set_title: &fl!("create-report-dialog", "error-title"),
-                            add_css_class: "error",
+                            add_css_class: adw_css::ERROR,
 
                             gtk::Box {
                                 set_hexpand: true,

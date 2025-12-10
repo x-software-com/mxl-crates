@@ -1,4 +1,7 @@
-use relm4::{FactorySender, adw::prelude::*, factory::FactoryVecDeque, factory::FactoryView, gtk::pango, prelude::*};
+use relm4::{
+    FactorySender, adw::prelude::*, css as adw_css, factory::FactoryVecDeque, factory::FactoryView, gtk::pango,
+    prelude::*,
+};
 use sancus_lib::third_party_licenses::License;
 use std::string::String;
 
@@ -47,7 +50,7 @@ impl FactoryComponent for ThirdPartyLicensePackageModel {
             set_hexpand: true,
             set_spacing: SPACING,
             set_margin_all: MARGIN,
-            add_css_class: "activatable",
+            add_css_class: adw_css::ACTIVATABLE,
 
             gtk::Box {
                 set_orientation: gtk::Orientation::Horizontal,
@@ -62,7 +65,7 @@ impl FactoryComponent for ThirdPartyLicensePackageModel {
 
                     #[watch]
                     set_css_classes: if self.active {
-                        &["accent"]
+                        &[adw_css::ACCENT]
                     } else {
                         &[]
                     },

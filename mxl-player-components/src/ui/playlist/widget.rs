@@ -2,7 +2,9 @@ use crate::icon_names;
 use anyhow::Result;
 use gst_pbutils::DiscovererInfo;
 use log::*;
-use mxl_relm4_components::relm4::{self, actions::*, adw::prelude::*, factory::FactoryVecDeque, gtk::glib, prelude::*};
+use mxl_relm4_components::relm4::{
+    self, actions::*, adw::prelude::*, css as adw_css, factory::FactoryVecDeque, gtk::glib, prelude::*,
+};
 
 use glib::clone;
 
@@ -32,10 +34,10 @@ impl Component for PlaylistComponentModel {
         gtk::Box {
             set_orientation: gtk::Orientation::Vertical,
             set_width_request: 650,
-            set_css_classes: &["background"],
+            set_css_classes: &[adw_css::BACKGROUND],
 
             adw::HeaderBar {
-                set_css_classes: &["flat"],
+                set_css_classes: &[adw_css::FLAT],
                 set_show_end_title_buttons: false,
                 set_title_widget: Some(&gtk::Label::new(Some(&fl!("playlist")))),
                 pack_start = &gtk::Button {
@@ -44,7 +46,7 @@ impl Component for PlaylistComponentModel {
                     set_has_tooltip: true,
                     set_tooltip_text: Some(&fl!("add-file")),
                     set_icon_name: icon_names::PLUS,
-                    set_css_classes: &["flat", "image-button"],
+                    set_css_classes: &[adw_css::FLAT, "image-button"],
                     set_valign: gtk::Align::Center,
                     connect_clicked => PlaylistComponentInput::FileChooserRequest,
                 },
@@ -100,7 +102,7 @@ impl Component for PlaylistComponentModel {
 
                     #[local_ref]
                     file_list_box -> gtk::ListBox {
-                        add_css_class: "boxed-list",
+                        add_css_class: adw_css::BOXED_LIST,
                         set_activate_on_single_click: false,
                         connect_row_activated[sender] => move |_, row| {
                             sender.input(PlaylistComponentInput::Activate(row.index() as usize))

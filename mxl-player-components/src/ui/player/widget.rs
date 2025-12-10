@@ -1,6 +1,6 @@
 use gst_video::VideoRectangle;
 use log::*;
-use mxl_relm4_components::relm4::{self, gtk::glib, gtk::prelude::*, prelude::*};
+use mxl_relm4_components::relm4::{self, css as adw_css, gtk::glib, gtk::prelude::*, prelude::*};
 use std::{borrow::BorrowMut, rc::Rc, sync::Mutex};
 
 use glib::clone;
@@ -58,7 +58,7 @@ impl Component for PlayerComponentModel {
             add_overlay = overlay = &gtk::Box {
                 #[watch]
                 set_visible: model.show_seeking_overlay && model.playback_state == PlaybackState::Buffering,
-                add_css_class: "osd",
+                add_css_class: adw_css::OSD,
                 set_vexpand: true,
                 set_hexpand: true,
                 set_can_target: false,
@@ -78,7 +78,7 @@ impl Component for PlayerComponentModel {
                         } else {
                             fl!("buffering").clone()
                         }.as_ref(),
-                        set_css_classes: &["title-4"],
+                        set_css_classes: &[adw_css::TITLE_4],
                     },
 
                     gtk::Spinner {
