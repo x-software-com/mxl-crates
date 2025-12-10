@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.8](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.7...mxl-investigator-v0.2.8) - 2025-12-10
+
+### Other
+
+- use relm4 css classes
+
 ## [0.2.7](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.6...mxl-investigator-v0.2.7) - 2025-12-03
 
 ### Other

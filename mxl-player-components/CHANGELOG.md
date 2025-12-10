@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.15](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.14...mxl-player-components-v0.1.15) - 2025-12-10
+
+### Other
+
+- use relm4 css classes
+
 ## [0.1.14](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.13...mxl-player-components-v0.1.14) - 2025-12-03
 
 ### Other
