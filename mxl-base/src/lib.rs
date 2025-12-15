@@ -5,3 +5,5 @@ pub mod misc;
 
 pub use about::about;
 pub use misc::init;
+
+pub use fern;
