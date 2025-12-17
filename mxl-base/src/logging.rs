@@ -86,9 +86,7 @@ impl Builder {
         // NOTE!!!
         // Every error MUST be a panic here else the user will not be able to see the error!
 
-        let mut basic_logger = fern::Dispatch::new().format(|out, message, record| {
-            out.finish(format_args!("{} [{}] {}", record.level(), record.target(), message))
-        });
+        let mut basic_logger = fern::Dispatch::new();
         basic_logger = Self::add_log_level_for(basic_logger, &self.level_for);
 
         {
@@ -118,6 +116,9 @@ impl Builder {
         if !self.without_console {
             // console logger
             let mut console_logger = fern::Dispatch::new()
+                .format(|out, message, record| {
+                    out.finish(format_args!("{} [{}] {}", record.level(), record.target(), message))
+                })
                 .filter(|metadata| metadata.level() <= get_console_log_level())
                 .chain(std::io::stderr());
             console_logger = Self::add_log_level_for(console_logger, &self.level_for);
