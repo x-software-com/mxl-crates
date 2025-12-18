@@ -18,12 +18,9 @@ relm4-icons = { workspace = true, optional = true }
 relm4 = { version = "0.10.0", default-features = false, features = [
     "css",
     "macros",
-    "libadwaita",
     "gnome_44",
 ] }
-relm4-components = { version = "0.10.0", default-features = false, features = [
-    "libadwaita",
-] }
+relm4-components = { version = "0.10.0", default-features = false }
 sancus = { version = "0.1.7", default-features = false, optional = true }
 
 # Internationalization:
@@ -32,10 +29,12 @@ rust-embed.workspace = true
 i18n-embed.workspace = true
 
 [features]
-third_party_licenses_dialog = ["dep:sancus", "relm4-icons"]
+libadwaita = ["relm4-icons", "relm4/libadwaita", "relm4-components/libadwaita"]
+third_party_licenses_dialog = ["dep:sancus", "relm4-icons", "libadwaita"]
 
 [build-dependencies]
 relm4-icons-build.workspace = true
+gvdb = { version = "0.9.0", features = ["gresource"] }
 
 [package.metadata.cargo-machete]
-ignored = ["relm4-icons-build", "sancus"]
+ignored = ["relm4-icons-build", "sancus", "gvdb"]

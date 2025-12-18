@@ -14,7 +14,7 @@ rust-version.workspace = true
 anyhow.workspace = true
 log.workspace = true
 const_format.workspace = true
-mxl-relm4-components.workspace = true
+mxl-relm4-components = { workspace = true, features = ["libadwaita"] }
 chrono.workspace = true
 relm4-icons.workspace = true
 # threadpool = "1"

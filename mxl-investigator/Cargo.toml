@@ -14,7 +14,9 @@ rust-version.workspace = true
 [dependencies]
 anyhow.workspace = true
 log.workspace = true
-mxl-relm4-components = { workspace = true, optional = true }
+mxl-relm4-components = { workspace = true, optional = true, features = [
+    "libadwaita",
+] }
 chrono.workspace = true
 tempfile = { workspace = true, optional = true }
 relm4-icons = { workspace = true, optional = true }

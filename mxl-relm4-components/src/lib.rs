@@ -7,7 +7,14 @@ mod localization;
 pub fn init() -> anyhow::Result<()> {
     localization::init();
     relm4::gtk::init()?;
-    relm4::adw::init()?;
+    #[cfg(feature = "libadwaita")]
+    {
+        relm4::adw::init()?;
+        pub const LIBADWAITA_GRESOURCE_BYTES: &[u8] = include_bytes!(env!("LIBADWAITA_GRESOURCE_FILE"));
+        pub const LIBADWAITA_RESOURCE_PREFIX: &str = env!("LIBADWAITA_RESOURCE_PREFIX");
+
+        relm4_icons::initialize_icons(LIBADWAITA_GRESOURCE_BYTES, LIBADWAITA_RESOURCE_PREFIX);
+    }
     #[cfg(feature = "third_party_licenses_dialog")]
     {
         use third_party_licenses_dialog::icon_names;
