@@ -1,6 +1,6 @@
 [package]
 name = "mxl-investigator"
-version = "0.2.8"
+version = "0.2.9"
 description = "This is a component of the X-Software MXL product line."
 readme = "README.md"
 license.workspace = true

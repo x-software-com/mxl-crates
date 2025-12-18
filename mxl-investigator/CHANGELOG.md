@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.9](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.8...mxl-investigator-v0.2.9) - 2025-12-18
+
+### Other
+
+- fix missing libadwaita icon
+
 ## [0.2.8](https://github.com/x-software-com/mxl-crates/compare/mxl-investigator-v0.2.7...mxl-investigator-v0.2.8) - 2025-12-10
 
 ### Other
