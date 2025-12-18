@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 
+## [0.2.14](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.13...mxl-relm4-components-v0.2.14) - 2025-12-18
+
+### Other
+
+- fix missing libadwaita icon
+
 ## [0.2.13](https://github.com/x-software-com/mxl-crates/compare/mxl-relm4-components-v0.2.12...mxl-relm4-components-v0.2.13) - 2025-12-10
 
 ### Other

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.16](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.15...mxl-player-components-v0.1.16) - 2025-12-18
+
+### Other
+
+- fix missing libadwaita icon
+
 ## [0.1.15](https://github.com/x-software-com/mxl-crates/compare/mxl-player-components-v0.1.14...mxl-player-components-v0.1.15) - 2025-12-10
 
 ### Other
